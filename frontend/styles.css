@@ -744,6 +744,62 @@ img {
 }
 
 /* ===================================
+   EXPECTED MRIS
+   =================================== */
+
+.expected-mris {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.expected-mris h3 {
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
+}
+
+.expected-mris > p {
+  font-size: 0.8rem;
+  color: var(--color-text-tertiary);
+  margin-bottom: 1rem;
+}
+
+.expected-mris-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.expected-mri-item {
+  text-align: center;
+}
+
+.expected-mri-item img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-light);
+  margin-bottom: 0.4rem;
+}
+
+.expected-mri-label {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: white;
+}
+
+.expected-mri-label.glioma { background: var(--color-glioma); }
+.expected-mri-label.meningioma { background: var(--color-meningioma); }
+.expected-mri-label.pituitary { background: var(--color-pituitary); }
+.expected-mri-label.no_tumor { background: var(--color-no-tumor); }
+
+/* ===================================
    DISCLAIMER
    =================================== */
 
@@ -893,5 +949,9 @@ img {
 
   .about-grid {
     grid-template-columns: 1fr;
+  }
+
+  .expected-mris-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
