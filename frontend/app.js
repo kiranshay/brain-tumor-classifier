@@ -2,8 +2,7 @@
 // Configuration
 // ===================================
 
-// Change this to your Render URL after deployment
-const API_URL = "http://localhost:8000";
+const API_URL = "https://brain-tumor-classifier-q8kn.onrender.com";
 
 const TUMOR_INFO = {
   glioma:
