@@ -294,6 +294,7 @@ async function loadHistory(append = false) {
         </div>
       `;
 
+      card.addEventListener("click", () => openHistoryDetail(item));
       historyGrid.appendChild(card);
     });
 
@@ -354,6 +355,83 @@ async function loadStats() {
     // Stats will show zeros if server is down
   }
 }
+
+// ===================================
+// History Detail Modal
+// ===================================
+
+const modalOverlay = document.getElementById("modal-overlay");
+const modalCloseBtn = document.getElementById("modal-close-btn");
+
+function openHistoryDetail(item) {
+  const thumbSrc = item.thumbnail_base64
+    ? `data:image/jpeg;base64,${item.thumbnail_base64}`
+    : "";
+
+  if (thumbSrc) {
+    document.getElementById("modal-image").src = thumbSrc;
+    document.getElementById("modal-image").classList.remove("hidden");
+  } else {
+    document.getElementById("modal-image").classList.add("hidden");
+  }
+
+  const badge = document.getElementById("modal-badge");
+  badge.textContent = formatClassName(item.predicted_class);
+  badge.className = `result-badge ${item.predicted_class}`;
+
+  document.getElementById("modal-confidence").textContent =
+    `${(item.confidence * 100).toFixed(1)}%`;
+
+  const barsContainer = document.getElementById("modal-confidence-bars");
+  barsContainer.innerHTML = CLASS_ORDER.map((cls) => {
+    const pct = ((item.all_confidences[cls] || 0) * 100).toFixed(1);
+    return `
+      <div class="confidence-bar-row">
+        <span class="confidence-label">${formatClassName(cls)}</span>
+        <div class="confidence-track">
+          <div class="confidence-fill ${cls}" style="width: ${pct}%"></div>
+        </div>
+        <span class="confidence-pct">${pct}%</span>
+      </div>
+    `;
+  }).join("");
+
+  document.getElementById("modal-time").textContent =
+    `${item.inference_time_ms.toFixed(0)}ms inference`;
+  document.getElementById("modal-filename").textContent =
+    item.original_filename || "Unknown";
+
+  const date = new Date(item.created_at);
+  document.getElementById("modal-date").textContent = date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
+  document.getElementById("modal-info").textContent =
+    TUMOR_INFO[item.predicted_class] || "";
+
+  modalOverlay.classList.remove("hidden");
+  lucide.createIcons();
+}
+
+modalCloseBtn.addEventListener("click", () => {
+  modalOverlay.classList.add("hidden");
+});
+
+modalOverlay.addEventListener("click", (e) => {
+  if (e.target === modalOverlay) {
+    modalOverlay.classList.add("hidden");
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !modalOverlay.classList.contains("hidden")) {
+    modalOverlay.classList.add("hidden");
+  }
+});
 
 // ===================================
 // Helpers

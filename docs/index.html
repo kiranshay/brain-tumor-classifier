@@ -232,6 +232,32 @@
       </div>
     </div>
 
+  <!-- History Detail Modal -->
+  <div class="modal-overlay hidden" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Classification Detail</h2>
+        <button class="btn btn-ghost btn-sm" id="modal-close-btn">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-image-row">
+        <img id="modal-image" alt="MRI scan">
+      </div>
+      <div class="result-prediction">
+        <span class="result-badge" id="modal-badge"></span>
+        <span class="result-confidence" id="modal-confidence"></span>
+      </div>
+      <div class="confidence-bars" id="modal-confidence-bars"></div>
+      <div class="result-meta">
+        <span><i data-lucide="clock"></i> <span id="modal-time"></span></span>
+        <span><i data-lucide="file"></i> <span id="modal-filename"></span></span>
+        <span><i data-lucide="calendar"></i> <span id="modal-date"></span></span>
+      </div>
+      <div class="result-info" id="modal-info"></div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="footer">
     <div class="container footer-content">
