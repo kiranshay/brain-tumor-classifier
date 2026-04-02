@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroScan | Brain Tumor MRI Classifier</title>
+  <meta name="description" content="Brain tumor MRI classification using deep learning. Upload an MRI scan and get instant classification with confidence scores.">
+  <meta property="og:title" content="NeuroScan | Brain Tumor MRI Classifier">
+  <meta property="og:description" content="Deep learning brain tumor classifier built with EfficientNet-B0, FastAPI, and Supabase.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kiranshay.github.io/brain-tumor-classifier">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-content">
+      <a href="#" class="logo" id="logo-link">
+        <i data-lucide="brain"></i>
+        <span>NeuroScan</span>
+      </a>
+      <nav class="nav-tabs">
+        <button class="nav-tab active" data-view="classify">
+          <i data-lucide="scan"></i> Classify
+        </button>
+        <button class="nav-tab" data-view="history">
+          <i data-lucide="clock"></i> History
+        </button>
+        <button class="nav-tab" data-view="stats">
+          <i data-lucide="bar-chart-3"></i> Dashboard
+        </button>
+        <button class="nav-tab" data-view="about">
+          <i data-lucide="info"></i> About
+        </button>
+      </nav>
+      <a href="https://kiranshay.github.io" class="back-link">
+        <i data-lucide="arrow-left"></i> Portfolio
+      </a>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Server Status Banner -->
+    <div class="server-banner" id="server-banner">
+      <div class="container">
+        <i data-lucide="loader" class="spinner"></i>
+        <span>Waking up the server... this may take 30-60 seconds on first load.</span>
+      </div>
+    </div>
+
+    <!-- Classify View -->
+    <div class="view active" id="view-classify">
+      <div class="container">
+        <div class="classify-layout">
+          <!-- Upload Section -->
+          <div class="upload-section" id="upload-section">
+            <h1>Classify Brain MRI</h1>
+            <p class="subtitle">Upload a brain MRI scan to classify it as glioma, meningioma, pituitary tumor, or healthy tissue.</p>
+
+            <div class="disclaimer">
+              <i data-lucide="alert-triangle"></i>
+              <span>For educational and demonstration purposes only. Not a medical diagnostic tool.</span>
+            </div>
+
+            <div class="upload-zone" id="upload-zone">
+              <i data-lucide="upload-cloud"></i>
+              <p class="upload-text">Drag & drop an MRI image here</p>
+              <p class="upload-hint">or click to browse files</p>
+              <input type="file" id="file-input" accept="image/*" hidden>
+            </div>
+
+            <div class="samples-section">
+              <p class="samples-label">No MRI handy? Try a sample:</p>
+              <div class="sample-buttons">
+                <button class="btn btn-sample" data-sample="glioma">Glioma</button>
+                <button class="btn btn-sample" data-sample="meningioma">Meningioma</button>
+                <button class="btn btn-sample" data-sample="pituitary">Pituitary</button>
+                <button class="btn btn-sample" data-sample="no_tumor">Healthy</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result Section (hidden until prediction) -->
+          <div class="result-section hidden" id="result-section">
+            <div class="result-card">
+              <div class="result-header">
+                <h2>Classification Result</h2>
+                <button class="btn btn-ghost btn-sm" id="classify-again-btn">
+                  <i data-lucide="refresh-cw"></i> New Scan
+                </button>
+              </div>
+
+              <div class="result-image-row">
+                <img id="result-image" alt="Uploaded MRI scan">
+              </div>
+
+              <div class="result-prediction">
+                <span class="result-badge" id="result-badge"></span>
+                <span class="result-confidence" id="result-confidence"></span>
+              </div>
+
+              <div class="confidence-bars" id="confidence-bars"></div>
+
+              <div class="result-meta">
+                <span><i data-lucide="clock"></i> <span id="result-time"></span></span>
+                <span><i data-lucide="file"></i> <span id="result-filename"></span></span>
+              </div>
+
+              <div class="result-info" id="result-info"></div>
+            </div>
+          </div>
+
+          <!-- Loading State -->
+          <div class="loading-section hidden" id="loading-section">
+            <div class="loading-card">
+              <i data-lucide="loader" class="spinner"></i>
+              <p>Analyzing MRI scan...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- History View -->
+    <div class="view" id="view-history">
+      <div class="container">
+        <h1>Prediction History</h1>
+        <p class="subtitle">Previous classifications stored in the database.</p>
+        <div class="history-grid" id="history-grid"></div>
+        <div class="history-empty hidden" id="history-empty">
+          <i data-lucide="inbox"></i>
+          <p>No predictions yet. Classify an MRI to get started.</p>
+        </div>
+        <button class="btn btn-secondary load-more hidden" id="load-more-btn">Load More</button>
+      </div>
+    </div>
+
+    <!-- Stats View -->
+    <div class="view" id="view-stats">
+      <div class="container">
+        <h1>Dashboard</h1>
+        <p class="subtitle">Aggregate statistics from all predictions.</p>
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><i data-lucide="hash"></i></div>
+            <div class="stat-value" id="stat-total">0</div>
+            <div class="stat-label">Total Predictions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i data-lucide="target"></i></div>
+            <div class="stat-value" id="stat-confidence">0%</div>
+            <div class="stat-label">Avg Confidence</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i data-lucide="zap"></i></div>
+            <div class="stat-value" id="stat-speed">0ms</div>
+            <div class="stat-label">Avg Inference Time</div>
+          </div>
+        </div>
+        <div class="distribution-section">
+          <h2>Class Distribution</h2>
+          <div class="distribution-bars" id="distribution-bars"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+    <!-- About View -->
+    <div class="view" id="view-about">
+      <div class="container">
+        <h1>About This Model</h1>
+        <p class="subtitle">How NeuroScan works under the hood.</p>
+
+        <div class="about-grid">
+          <div class="about-card">
+            <h3><i data-lucide="cpu"></i> Architecture</h3>
+            <p>EfficientNet-B0 pre-trained on ImageNet with a custom classifier head fine-tuned for brain tumor classification. The backbone feature layers are frozen; only the final classification layer is trained.</p>
+          </div>
+          <div class="about-card">
+            <h3><i data-lucide="database"></i> Dataset</h3>
+            <p>Trained on the Brain Tumor MRI Dataset from Kaggle containing ~7,000 axial brain MRI images across 4 classes: glioma, meningioma, pituitary tumor, and no tumor.</p>
+          </div>
+          <div class="about-card">
+            <h3><i data-lucide="layers"></i> Pipeline</h3>
+            <p>Images are resized to 224x224, normalized with ImageNet statistics, and passed through the model. The output is a softmax probability distribution across the 4 classes.</p>
+          </div>
+          <div class="about-card">
+            <h3><i data-lucide="alert-circle"></i> Limitations</h3>
+            <p>This model only classifies into 4 broad categories. It cannot identify specific tumor subtypes, and performance may vary on MRI scans with different orientations, contrast settings, or annotations.</p>
+          </div>
+        </div>
+
+        <div class="tech-stack-section">
+          <h2>Tech Stack</h2>
+          <div class="tech-tags">
+            <span class="tech-tag">PyTorch</span>
+            <span class="tech-tag">EfficientNet-B0</span>
+            <span class="tech-tag">FastAPI</span>
+            <span class="tech-tag">Supabase</span>
+            <span class="tech-tag">PostgreSQL</span>
+            <span class="tech-tag">Google Colab</span>
+            <span class="tech-tag">Render</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>Built by <a href="https://kiranshay.github.io">Kiran Shay</a> &middot; EfficientNet-B0 &middot; FastAPI &middot; Supabase</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

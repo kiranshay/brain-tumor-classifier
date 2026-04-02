@@ -1,0 +1,897 @@
+/* ===================================
+   DESIGN SYSTEM (matches portfolio)
+   =================================== */
+
+:root {
+  --color-primary-50: #E8F0FE;
+  --color-primary-100: #C5DDFC;
+  --color-primary-200: #91BFF9;
+  --color-primary-300: #5C9FF5;
+  --color-primary-400: #3182F6;
+  --color-primary-500: #1366F0;
+  --color-primary-600: #0E52CC;
+  --color-primary-700: #0A3FA3;
+
+  --color-secondary-50: #F3F0FF;
+  --color-secondary-100: #E4DCFF;
+  --color-secondary-500: #7E4EFF;
+  --color-secondary-600: #6638DB;
+
+  --color-accent-50: #E0F7FA;
+  --color-accent-400: #26C6DA;
+  --color-accent-500: #00BCD4;
+
+  --color-gray-50: #FAFBFC;
+  --color-gray-100: #F4F5F7;
+  --color-gray-200: #E8EAED;
+  --color-gray-300: #D1D5DB;
+  --color-gray-400: #9CA3AF;
+  --color-gray-500: #6B7280;
+  --color-gray-600: #4B5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1F2937;
+  --color-gray-900: #111827;
+
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #FAFBFC;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4B5563;
+  --color-text-tertiary: #6B7280;
+  --color-border-light: #E8EAED;
+  --color-border-medium: #D1D5DB;
+
+  --color-glioma: #EF4444;
+  --color-meningioma: #F59E0B;
+  --color-pituitary: #8B5CF6;
+  --color-no-tumor: #10B981;
+
+  --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+/* ===================================
+   RESET & BASE
+   =================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background: var(--color-bg-secondary);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.subtitle {
+  color: var(--color-text-secondary);
+  font-size: 1.05rem;
+  margin-bottom: 2rem;
+}
+
+/* ===================================
+   HEADER
+   =================================== */
+
+.header {
+  background: white;
+  border-bottom: 1px solid var(--color-border-light);
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary-600);
+}
+
+.logo svg {
+  width: 24px;
+  height: 24px;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--color-gray-100);
+  border-radius: var(--radius-sm);
+  padding: 0.25rem;
+}
+
+.nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-tab svg {
+  width: 16px;
+  height: 16px;
+}
+
+.nav-tab:hover {
+  color: var(--color-text-primary);
+}
+
+.nav-tab.active {
+  background: white;
+  color: var(--color-primary-600);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  color: var(--color-text-tertiary);
+  transition: color 0.2s;
+}
+
+.back-link:hover {
+  color: var(--color-primary-600);
+}
+
+.back-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ===================================
+   SERVER BANNER
+   =================================== */
+
+.server-banner {
+  background: var(--color-primary-50);
+  border-bottom: 1px solid var(--color-primary-200);
+  padding: 0.75rem 0;
+  display: none;
+}
+
+.server-banner.show {
+  display: block;
+}
+
+.server-banner .container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-primary-700);
+}
+
+/* ===================================
+   MAIN / VIEWS
+   =================================== */
+
+.main {
+  flex: 1;
+  padding: 2.5rem 0;
+}
+
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+/* ===================================
+   CLASSIFY VIEW
+   =================================== */
+
+.classify-layout {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.upload-zone {
+  border: 2px dashed var(--color-border-medium);
+  border-radius: var(--radius-lg);
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.upload-zone:hover,
+.upload-zone.dragover {
+  border-color: var(--color-primary-400);
+  background: var(--color-primary-50);
+}
+
+.upload-zone svg {
+  width: 48px;
+  height: 48px;
+  color: var(--color-gray-400);
+  margin-bottom: 1rem;
+}
+
+.upload-zone:hover svg,
+.upload-zone.dragover svg {
+  color: var(--color-primary-500);
+}
+
+.upload-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.upload-hint {
+  font-size: 0.875rem;
+  color: var(--color-text-tertiary);
+}
+
+.samples-section {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.samples-label {
+  font-size: 0.875rem;
+  color: var(--color-text-tertiary);
+  margin-bottom: 0.75rem;
+}
+
+.sample-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ===================================
+   BUTTONS
+   =================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+  color: var(--color-text-primary);
+}
+
+.btn:hover {
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-600);
+}
+
+.btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-primary {
+  background: var(--color-primary-500);
+  color: white;
+  border-color: var(--color-primary-500);
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+  color: white;
+}
+
+.btn-secondary {
+  background: var(--color-gray-100);
+  border-color: var(--color-border-light);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+}
+
+.btn-ghost:hover {
+  background: var(--color-gray-100);
+}
+
+.btn-sm {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+}
+
+.btn-sample {
+  font-size: 0.8rem;
+  padding: 0.4rem 1rem;
+}
+
+.btn-sample[data-sample="glioma"] { border-color: var(--color-glioma); color: var(--color-glioma); }
+.btn-sample[data-sample="meningioma"] { border-color: var(--color-meningioma); color: var(--color-meningioma); }
+.btn-sample[data-sample="pituitary"] { border-color: var(--color-pituitary); color: var(--color-pituitary); }
+.btn-sample[data-sample="no_tumor"] { border-color: var(--color-no-tumor); color: var(--color-no-tumor); }
+
+.btn-sample:hover {
+  color: white;
+}
+.btn-sample[data-sample="glioma"]:hover { background: var(--color-glioma); }
+.btn-sample[data-sample="meningioma"]:hover { background: var(--color-meningioma); }
+.btn-sample[data-sample="pituitary"]:hover { background: var(--color-pituitary); }
+.btn-sample[data-sample="no_tumor"]:hover { background: var(--color-no-tumor); }
+
+/* ===================================
+   RESULT CARD
+   =================================== */
+
+.result-card {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.result-image-row {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.result-image-row img {
+  max-height: 250px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-light);
+}
+
+.result-prediction {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.result-badge {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  text-transform: capitalize;
+}
+
+.result-badge.glioma { background: var(--color-glioma); }
+.result-badge.meningioma { background: var(--color-meningioma); }
+.result-badge.pituitary { background: var(--color-pituitary); }
+.result-badge.no_tumor { background: var(--color-no-tumor); }
+
+.result-confidence {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* Confidence Bars */
+.confidence-bars {
+  margin-bottom: 1.5rem;
+}
+
+.confidence-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.confidence-label {
+  width: 100px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  color: var(--color-text-secondary);
+  text-align: right;
+}
+
+.confidence-track {
+  flex: 1;
+  height: 24px;
+  background: var(--color-gray-100);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.confidence-fill {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.6s ease;
+  min-width: 2px;
+}
+
+.confidence-fill.glioma { background: var(--color-glioma); }
+.confidence-fill.meningioma { background: var(--color-meningioma); }
+.confidence-fill.pituitary { background: var(--color-pituitary); }
+.confidence-fill.no_tumor { background: var(--color-no-tumor); }
+
+.confidence-pct {
+  width: 50px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.result-meta {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--color-text-tertiary);
+  margin-bottom: 1.5rem;
+}
+
+.result-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.result-meta svg {
+  width: 14px;
+  height: 14px;
+}
+
+.result-info {
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+/* ===================================
+   LOADING
+   =================================== */
+
+.loading-card {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 3rem;
+  text-align: center;
+}
+
+.loading-card p {
+  margin-top: 1rem;
+  color: var(--color-text-secondary);
+}
+
+.spinner {
+  animation: spin 1.2s linear infinite;
+  color: var(--color-primary-500);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ===================================
+   HISTORY VIEW
+   =================================== */
+
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.history-card {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  transition: box-shadow 0.2s;
+}
+
+.history-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.history-card-top {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.history-thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1px solid var(--color-border-light);
+}
+
+.history-card-info {
+  flex: 1;
+}
+
+.history-class {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  text-transform: capitalize;
+  margin-bottom: 0.35rem;
+}
+
+.history-class.glioma { background: var(--color-glioma); }
+.history-class.meningioma { background: var(--color-meningioma); }
+.history-class.pituitary { background: var(--color-pituitary); }
+.history-class.no_tumor { background: var(--color-no-tumor); }
+
+.history-confidence {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.history-meta {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+}
+
+.history-empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-text-tertiary);
+}
+
+.history-empty svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
+  color: var(--color-gray-300);
+}
+
+.load-more {
+  display: block;
+  margin: 0 auto;
+}
+
+/* ===================================
+   STATS VIEW
+   =================================== */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.stat-card {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat-icon {
+  margin-bottom: 0.75rem;
+}
+
+.stat-icon svg {
+  width: 28px;
+  height: 28px;
+  color: var(--color-primary-500);
+}
+
+.stat-value {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--color-text-tertiary);
+}
+
+.distribution-section {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+}
+
+.distribution-bars {
+  margin-top: 1rem;
+}
+
+.dist-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.dist-label {
+  width: 100px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  text-align: right;
+  color: var(--color-text-secondary);
+}
+
+.dist-track {
+  flex: 1;
+  height: 28px;
+  background: var(--color-gray-100);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.dist-fill {
+  height: 100%;
+  border-radius: 14px;
+  transition: width 0.6s ease;
+  min-width: 2px;
+}
+
+.dist-fill.glioma { background: var(--color-glioma); }
+.dist-fill.meningioma { background: var(--color-meningioma); }
+.dist-fill.pituitary { background: var(--color-pituitary); }
+.dist-fill.no_tumor { background: var(--color-no-tumor); }
+
+.dist-count {
+  width: 40px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+/* ===================================
+   DISCLAIMER
+   =================================== */
+
+.disclaimer {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #FEF3C7;
+  border: 1px solid #FCD34D;
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  color: #92400E;
+}
+
+.disclaimer svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ===================================
+   ABOUT VIEW
+   =================================== */
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.about-card {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+}
+
+.about-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-text-primary);
+}
+
+.about-card h3 svg {
+  width: 20px;
+  height: 20px;
+  color: var(--color-primary-500);
+}
+
+.about-card p {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+.tech-stack-section {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+}
+
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.tech-tag {
+  display: inline-block;
+  padding: 0.35rem 0.9rem;
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-200);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-primary-700);
+}
+
+/* ===================================
+   FOOTER
+   =================================== */
+
+.footer {
+  border-top: 1px solid var(--color-border-light);
+  padding: 1.5rem 0;
+  margin-top: auto;
+}
+
+.footer-content {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-text-tertiary);
+}
+
+.footer-content a {
+  color: var(--color-primary-600);
+  font-weight: 500;
+}
+
+/* ===================================
+   RESPONSIVE
+   =================================== */
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .header-content {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .nav-tabs {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .back-link {
+    margin-left: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .history-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sample-buttons {
+    gap: 0.4rem;
+  }
+
+  .confidence-label {
+    width: 80px;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+}
