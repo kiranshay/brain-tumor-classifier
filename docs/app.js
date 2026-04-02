@@ -63,6 +63,7 @@ navTabs.forEach((tab) => {
 
 logoLink.addEventListener("click", (e) => {
   e.preventDefault();
+  resetClassify();
   switchView("classify");
 });
 
