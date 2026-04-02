@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NeuroScan | Brain Tumor MRI Classifier</title>
   <meta name="description" content="Brain tumor MRI classification using deep learning. Upload an MRI scan and get instant classification with confidence scores.">
+  <meta property="og:title" content="NeuroScan | Brain Tumor MRI Classifier">
+  <meta property="og:description" content="Deep learning brain tumor classifier built with EfficientNet-B0, FastAPI, and Supabase.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kiranshay.github.io/brain-tumor-classifier">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -28,6 +32,9 @@
         </button>
         <button class="nav-tab" data-view="stats">
           <i data-lucide="bar-chart-3"></i> Dashboard
+        </button>
+        <button class="nav-tab" data-view="about">
+          <i data-lucide="info"></i> About
         </button>
       </nav>
       <a href="https://kiranshay.github.io" class="back-link">
@@ -53,6 +60,11 @@
           <div class="upload-section" id="upload-section">
             <h1>Classify Brain MRI</h1>
             <p class="subtitle">Upload a brain MRI scan to classify it as glioma, meningioma, pituitary tumor, or healthy tissue.</p>
+
+            <div class="disclaimer">
+              <i data-lucide="alert-triangle"></i>
+              <span>For educational and demonstration purposes only. Not a medical diagnostic tool.</span>
+            </div>
 
             <div class="upload-zone" id="upload-zone">
               <i data-lucide="upload-cloud"></i>
@@ -156,6 +168,46 @@
       </div>
     </div>
   </main>
+
+    <!-- About View -->
+    <div class="view" id="view-about">
+      <div class="container">
+        <h1>About This Model</h1>
+        <p class="subtitle">How NeuroScan works under the hood.</p>
+
+        <div class="about-grid">
+          <div class="about-card">
+            <h3><i data-lucide="cpu"></i> Architecture</h3>
+            <p>EfficientNet-B0 pre-trained on ImageNet with a custom classifier head fine-tuned for brain tumor classification. The backbone feature layers are frozen; only the final classification layer is trained.</p>
+          </div>
+          <div class="about-card">
+            <h3><i data-lucide="database"></i> Dataset</h3>
+            <p>Trained on the Brain Tumor MRI Dataset from Kaggle containing ~7,000 axial brain MRI images across 4 classes: glioma, meningioma, pituitary tumor, and no tumor.</p>
+          </div>
+          <div class="about-card">
+            <h3><i data-lucide="layers"></i> Pipeline</h3>
+            <p>Images are resized to 224x224, normalized with ImageNet statistics, and passed through the model. The output is a softmax probability distribution across the 4 classes.</p>
+          </div>
+          <div class="about-card">
+            <h3><i data-lucide="alert-circle"></i> Limitations</h3>
+            <p>This model only classifies into 4 broad categories. It cannot identify specific tumor subtypes, and performance may vary on MRI scans with different orientations, contrast settings, or annotations.</p>
+          </div>
+        </div>
+
+        <div class="tech-stack-section">
+          <h2>Tech Stack</h2>
+          <div class="tech-tags">
+            <span class="tech-tag">PyTorch</span>
+            <span class="tech-tag">EfficientNet-B0</span>
+            <span class="tech-tag">FastAPI</span>
+            <span class="tech-tag">Supabase</span>
+            <span class="tech-tag">PostgreSQL</span>
+            <span class="tech-tag">Google Colab</span>
+            <span class="tech-tag">Render</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
   <!-- Footer -->
   <footer class="footer">

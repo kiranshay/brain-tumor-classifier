@@ -744,6 +744,93 @@ img {
 }
 
 /* ===================================
+   DISCLAIMER
+   =================================== */
+
+.disclaimer {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #FEF3C7;
+  border: 1px solid #FCD34D;
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  color: #92400E;
+}
+
+.disclaimer svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ===================================
+   ABOUT VIEW
+   =================================== */
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.about-card {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+}
+
+.about-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-text-primary);
+}
+
+.about-card h3 svg {
+  width: 20px;
+  height: 20px;
+  color: var(--color-primary-500);
+}
+
+.about-card p {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+.tech-stack-section {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+}
+
+.tech-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.tech-tag {
+  display: inline-block;
+  padding: 0.35rem 0.9rem;
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-200);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-primary-700);
+}
+
+/* ===================================
    FOOTER
    =================================== */
 
@@ -802,5 +889,9 @@ img {
 
   .confidence-label {
     width: 80px;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
   }
 }
