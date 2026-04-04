@@ -650,6 +650,15 @@ img {
   font-weight: 600;
 }
 
+.history-subtype {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  margin-top: 0.2rem;
+}
+
 .history-meta {
   font-size: 0.75rem;
   color: var(--color-text-tertiary);

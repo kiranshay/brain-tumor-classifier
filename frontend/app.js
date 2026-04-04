@@ -366,12 +366,17 @@ async function loadHistory(append = false) {
         minute: "2-digit",
       });
 
+      const subtypeHtml = item.subtype
+        ? `<div class="history-subtype"><span class="history-class glioma">${formatClassName(item.subtype)}</span> ${(item.subtype_confidence * 100).toFixed(1)}%</div>`
+        : "";
+
       card.innerHTML = `
         <div class="history-card-top">
           ${thumbSrc ? `<img class="history-thumb" src="${thumbSrc}" alt="MRI thumbnail">` : ""}
           <div class="history-card-info">
             <span class="history-class ${item.predicted_class}">${formatClassName(item.predicted_class)}</span>
             <div class="history-confidence">${(item.confidence * 100).toFixed(1)}%</div>
+            ${subtypeHtml}
             <div class="history-meta">${timeStr} &middot; ${item.inference_time_ms.toFixed(0)}ms</div>
           </div>
         </div>
@@ -495,6 +500,34 @@ function openHistoryDetail(item) {
 
   document.getElementById("modal-info").textContent =
     TUMOR_INFO[item.predicted_class] || "";
+
+  // Subtype in modal
+  const modalSubtype = document.getElementById("modal-subtype-section");
+  if (item.subtype && item.subtype_confidences) {
+    modalSubtype.classList.remove("hidden");
+
+    document.getElementById("modal-subtype-badge").textContent = formatClassName(item.subtype);
+    document.getElementById("modal-subtype-confidence").textContent =
+      `${(item.subtype_confidence * 100).toFixed(1)}%`;
+
+    document.getElementById("modal-subtype-bars").innerHTML = SUBTYPE_ORDER.map((cls) => {
+      const pct = ((item.subtype_confidences[cls] || 0) * 100).toFixed(1);
+      return `
+        <div class="confidence-bar-row">
+          <span class="confidence-label" style="width:140px">${formatClassName(cls)}</span>
+          <div class="confidence-track">
+            <div class="confidence-fill glioma" style="width: ${pct}%"></div>
+          </div>
+          <span class="confidence-pct">${pct}%</span>
+        </div>
+      `;
+    }).join("");
+
+    document.getElementById("modal-subtype-info").textContent =
+      SUBTYPE_INFO[item.subtype] || "";
+  } else {
+    modalSubtype.classList.add("hidden");
+  }
 
   modalOverlay.classList.remove("hidden");
   lucide.createIcons();
