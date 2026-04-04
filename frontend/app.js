@@ -194,7 +194,7 @@ document.getElementById("gradcam-btn").addEventListener("click", async () => {
     // Show stage 1 heatmap
     if (data.gradcam) {
       document.getElementById("result-gradcam").src = `data:image/png;base64,${data.gradcam}`;
-      document.getElementById("gradcam-col").classList.remove("hidden");
+      document.getElementById("gradcam-col").style.display = "block";
     }
 
     // Show subtype heatmap if available
@@ -204,7 +204,7 @@ document.getElementById("gradcam-btn").addEventListener("click", async () => {
     }
 
     // Hide the button row
-    document.getElementById("gradcam-btn-row").classList.add("hidden");
+    document.getElementById("gradcam-btn-row").style.display = "none";
   } catch {
     btn.disabled = false;
     btn.innerHTML = '<i data-lucide="eye"></i> Retry Grad-CAM';
@@ -302,8 +302,8 @@ function displayResult(result, file) {
   imgEl.src = URL.createObjectURL(file);
 
   // Reset Grad-CAM state
-  document.getElementById("gradcam-col").classList.add("hidden");
-  document.getElementById("gradcam-btn-row").classList.remove("hidden");
+  document.getElementById("gradcam-col").style.display = "none";
+  document.getElementById("gradcam-btn-row").style.display = "flex";
   const gradcamBtn = document.getElementById("gradcam-btn");
   gradcamBtn.disabled = false;
   gradcamBtn.innerHTML = '<i data-lucide="eye"></i> Show Grad-CAM Heatmap';
