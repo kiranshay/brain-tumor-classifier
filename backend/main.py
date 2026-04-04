@@ -6,7 +6,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 
-from model import load_model, predict
+from model import load_model, predict, predict_with_gradcam
 from database import insert_prediction, get_predictions, get_stats
 from schemas import PredictionResponse, PredictionHistoryItem, StatsResponse
 
@@ -87,9 +87,22 @@ async def predict_tumor(file: UploadFile = File(...)):
         subtype=result.get("subtype"),
         subtype_confidence=result.get("subtype_confidence"),
         subtype_confidences=result.get("subtype_confidences"),
-        gradcam=result.get("gradcam"),
-        subtype_gradcam=result.get("subtype_gradcam"),
     )
+
+
+@app.post("/gradcam")
+async def get_gradcam(file: UploadFile = File(...)):
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File must be an image")
+
+    image_bytes = await file.read()
+
+    try:
+        result = predict_with_gradcam(image_bytes)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Grad-CAM failed: {str(e)}")
+
+    return result
 
 
 @app.get("/predictions", response_model=list[PredictionHistoryItem])

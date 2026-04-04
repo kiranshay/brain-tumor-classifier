@@ -433,6 +433,23 @@ img {
   border: 1px solid var(--color-border-light);
 }
 
+.gradcam-btn-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.gradcam-hint {
+  font-size: 0.8rem;
+  color: var(--color-text-tertiary);
+}
+
+.gradcam-loading {
+  font-size: 0.85rem;
+  color: var(--color-primary-600);
+}
+
 .image-label {
   display: block;
   font-size: 0.75rem;

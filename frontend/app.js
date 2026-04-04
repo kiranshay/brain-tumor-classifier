@@ -168,6 +168,50 @@ document.querySelectorAll(".btn-sample").forEach((btn) => {
 // Classify again
 classifyAgainBtn.addEventListener("click", resetClassify);
 
+// Grad-CAM button
+document.getElementById("gradcam-btn").addEventListener("click", async () => {
+  const btn = document.getElementById("gradcam-btn");
+  btn.disabled = true;
+  btn.innerHTML = '<i data-lucide="loader" class="spinner"></i> Generating heatmap...';
+  lucide.createIcons();
+
+  const file = window._lastFile;
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const res = await fetch(`${API_URL}/gradcam`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) throw new Error("Grad-CAM generation failed");
+
+    const data = await res.json();
+
+    // Show stage 1 heatmap
+    if (data.gradcam) {
+      document.getElementById("result-gradcam").src = `data:image/png;base64,${data.gradcam}`;
+      document.getElementById("gradcam-col").classList.remove("hidden");
+    }
+
+    // Show subtype heatmap if available
+    if (data.subtype_gradcam) {
+      document.getElementById("subtype-gradcam").src = `data:image/png;base64,${data.subtype_gradcam}`;
+      document.getElementById("subtype-gradcam-col").classList.remove("hidden");
+    }
+
+    // Hide the button row
+    document.getElementById("gradcam-btn-row").classList.add("hidden");
+  } catch {
+    btn.disabled = false;
+    btn.innerHTML = '<i data-lucide="eye"></i> Retry Grad-CAM';
+    lucide.createIcons();
+  }
+});
+
 function resetClassify() {
   uploadSection.classList.remove("hidden");
   resultSection.classList.add("hidden");
@@ -257,14 +301,15 @@ function displayResult(result, file) {
   const imgEl = document.getElementById("result-image");
   imgEl.src = URL.createObjectURL(file);
 
-  // Grad-CAM heatmap
-  const gradcamEl = document.getElementById("result-gradcam");
-  if (result.gradcam) {
-    gradcamEl.src = `data:image/png;base64,${result.gradcam}`;
-    gradcamEl.classList.remove("hidden");
-  } else {
-    gradcamEl.classList.add("hidden");
-  }
+  // Reset Grad-CAM state
+  document.getElementById("gradcam-col").classList.add("hidden");
+  document.getElementById("gradcam-btn-row").classList.remove("hidden");
+  const gradcamBtn = document.getElementById("gradcam-btn");
+  gradcamBtn.disabled = false;
+  gradcamBtn.innerHTML = '<i data-lucide="eye"></i> Show Grad-CAM Heatmap';
+
+  // Store file reference for gradcam request
+  window._lastFile = file;
 
   // Badge
   const badge = document.getElementById("result-badge");
@@ -322,14 +367,8 @@ function displayResult(result, file) {
     document.getElementById("subtype-info").textContent =
       SUBTYPE_INFO[result.subtype] || "";
 
-    // Subtype Grad-CAM
-    const subtypeGradcamCol = document.getElementById("subtype-gradcam-col");
-    if (result.subtype_gradcam) {
-      document.getElementById("subtype-gradcam").src = `data:image/png;base64,${result.subtype_gradcam}`;
-      subtypeGradcamCol.classList.remove("hidden");
-    } else {
-      subtypeGradcamCol.classList.add("hidden");
-    }
+    // Hide subtype gradcam until requested
+    document.getElementById("subtype-gradcam-col").classList.add("hidden");
   } else {
     subtypeSection.classList.add("hidden");
   }

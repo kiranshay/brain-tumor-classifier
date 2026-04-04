@@ -10,8 +10,8 @@ from torchvision import models, transforms
 from PIL import Image
 import matplotlib
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import matplotlib.pyplot as plt
 
 CLASS_NAMES = ["glioma", "meningioma", "no_tumor", "pituitary"]
 GLIOMA_SUBTYPES = ["astrocytoma", "ependymoma", "glioblastoma", "oligodendroglioma"]
@@ -25,7 +25,6 @@ inference_transforms = transforms.Compose([
     transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD),
 ])
 
-# Global model references, loaded once at startup
 _model = None
 _glioma_model = None
 
@@ -88,13 +87,7 @@ def preprocess_mri(image: Image.Image) -> Image.Image:
 
 
 def generate_gradcam(model, tensor, predicted_idx) -> str:
-    """Generate a Grad-CAM heatmap and return it as a base64 PNG string.
-
-    Grad-CAM visualizes which regions of the input image the model
-    focused on by looking at the gradients flowing into the last
-    convolutional layer.
-    """
-    # Hook into the last conv layer of EfficientNet-B0
+    """Generate a Grad-CAM heatmap and return it as a base64 PNG string."""
     target_layer = model.features[-1]
 
     activations = []
@@ -109,55 +102,41 @@ def generate_gradcam(model, tensor, predicted_idx) -> str:
     fwd_handle = target_layer.register_forward_hook(forward_hook)
     bwd_handle = target_layer.register_full_backward_hook(backward_hook)
 
-    # Forward pass with gradients enabled
     tensor_grad = tensor.clone().requires_grad_(True)
     output = model(tensor_grad)
     score = output[0, predicted_idx]
 
-    # Backward pass
     model.zero_grad()
     score.backward()
 
-    # Remove hooks
     fwd_handle.remove()
     bwd_handle.remove()
 
-    # Compute Grad-CAM
-    act = activations[0][0]  # (C, H, W)
-    grad = gradients[0][0]   # (C, H, W)
+    act = activations[0][0]
+    grad = gradients[0][0]
+    weights = grad.mean(dim=(1, 2))
 
-    # Global average pool the gradients to get channel weights
-    weights = grad.mean(dim=(1, 2))  # (C,)
-
-    # Weighted sum of activation maps
     gradcam = torch.zeros(act.shape[1:], dtype=act.dtype)
     for i, w in enumerate(weights):
         gradcam += w * act[i]
 
-    # ReLU — only keep positive contributions
     gradcam = F.relu(gradcam)
-
-    # Normalize to [0, 1]
     if gradcam.max() > 0:
         gradcam = gradcam / gradcam.max()
 
-    # Resize to input image size
     gradcam_np = gradcam.numpy()
     gradcam_resized = np.array(
         Image.fromarray((gradcam_np * 255).astype(np.uint8)).resize((224, 224), Image.BILINEAR)
     ) / 255.0
 
-    # Denormalize the original image for overlay
     img_np = tensor[0].permute(1, 2, 0).numpy()
     img_np = img_np * np.array(IMAGENET_STD) + np.array(IMAGENET_MEAN)
     img_np = np.clip(img_np, 0, 1)
 
-    # Create heatmap overlay
     heatmap = cm.jet(gradcam_resized)[:, :, :3]
     overlay = 0.55 * img_np + 0.45 * heatmap
     overlay = np.clip(overlay, 0, 1)
 
-    # Save to base64 PNG
     fig, ax = plt.subplots(1, 1, figsize=(3, 3), dpi=100)
     ax.imshow(overlay)
     ax.axis("off")
@@ -172,6 +151,7 @@ def generate_gradcam(model, tensor, predicted_idx) -> str:
 
 
 def predict(image_bytes: bytes) -> dict:
+    """Fast prediction without Grad-CAM."""
     if _model is None:
         raise RuntimeError("Model not loaded. Call load_model() first.")
 
@@ -181,7 +161,6 @@ def predict(image_bytes: bytes) -> dict:
 
     start = time.perf_counter()
 
-    # Stage 1: broad classification
     with torch.no_grad():
         outputs = _model(tensor)
         probabilities = torch.softmax(outputs, dim=1)[0]
@@ -195,15 +174,9 @@ def predict(image_bytes: bytes) -> dict:
         for i in range(len(CLASS_NAMES))
     }
 
-    # Generate Grad-CAM heatmap for stage 1
-    gradcam_base64 = generate_gradcam(_model, tensor, predicted_idx)
-    _model.eval()  # Reset to eval mode after gradcam backward pass
-
-    # Stage 2: glioma subtype classification
     subtype = None
     subtype_confidence = None
     subtype_confidences = None
-    subtype_gradcam_base64 = None
 
     if predicted_class == "glioma" and _glioma_model is not None:
         with torch.no_grad():
@@ -218,10 +191,6 @@ def predict(image_bytes: bytes) -> dict:
             for i in range(len(GLIOMA_SUBTYPES))
         }
 
-        # Grad-CAM for subtype model
-        subtype_gradcam_base64 = generate_gradcam(_glioma_model, tensor, sub_idx)
-        _glioma_model.eval()
-
     inference_time_ms = (time.perf_counter() - start) * 1000
 
     result = {
@@ -229,13 +198,44 @@ def predict(image_bytes: bytes) -> dict:
         "confidence": round(confidence, 4),
         "all_confidences": all_confidences,
         "inference_time_ms": round(inference_time_ms, 2),
-        "gradcam": gradcam_base64,
     }
 
     if subtype is not None:
         result["subtype"] = subtype
         result["subtype_confidence"] = subtype_confidence
         result["subtype_confidences"] = subtype_confidences
-        result["subtype_gradcam"] = subtype_gradcam_base64
+
+    return result
+
+
+def predict_with_gradcam(image_bytes: bytes) -> dict:
+    """Prediction with Grad-CAM heatmaps. Called on-demand."""
+    if _model is None:
+        raise RuntimeError("Model not loaded. Call load_model() first.")
+
+    image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    image = preprocess_mri(image)
+    tensor = inference_transforms(image).unsqueeze(0)
+
+    with torch.no_grad():
+        outputs = _model(tensor)
+        probabilities = torch.softmax(outputs, dim=1)[0]
+
+    predicted_idx = probabilities.argmax().item()
+    predicted_class = CLASS_NAMES[predicted_idx]
+
+    gradcam_base64 = generate_gradcam(_model, tensor, predicted_idx)
+    _model.eval()
+
+    result = {"gradcam": gradcam_base64}
+
+    if predicted_class == "glioma" and _glioma_model is not None:
+        with torch.no_grad():
+            sub_outputs = _glioma_model(tensor)
+            sub_probs = torch.softmax(sub_outputs, dim=1)[0]
+        sub_idx = sub_probs.argmax().item()
+
+        result["subtype_gradcam"] = generate_gradcam(_glioma_model, tensor, sub_idx)
+        _glioma_model.eval()
 
     return result

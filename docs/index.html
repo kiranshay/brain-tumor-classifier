@@ -122,10 +122,17 @@
                   <img id="result-image" alt="Uploaded MRI scan">
                   <span class="image-label">Original MRI</span>
                 </div>
-                <div class="result-image-col">
-                  <img id="result-gradcam" alt="Grad-CAM heatmap" class="hidden">
+                <div class="result-image-col hidden" id="gradcam-col">
+                  <img id="result-gradcam" alt="Grad-CAM heatmap">
                   <span class="image-label">Grad-CAM Heatmap</span>
                 </div>
+              </div>
+
+              <div class="gradcam-btn-row" id="gradcam-btn-row">
+                <button class="btn btn-secondary" id="gradcam-btn">
+                  <i data-lucide="eye"></i> Show Grad-CAM Heatmap
+                </button>
+                <span class="gradcam-hint">See which brain regions the model focused on</span>
               </div>
 
               <div class="result-prediction">
