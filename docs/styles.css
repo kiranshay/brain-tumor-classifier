@@ -454,6 +454,10 @@ img {
 .btn-sample[data-sample="meningioma"] { border-color: var(--color-meningioma); color: var(--color-meningioma); }
 .btn-sample[data-sample="pituitary"] { border-color: var(--color-pituitary); color: var(--color-pituitary); }
 .btn-sample[data-sample="no_tumor"] { border-color: var(--color-no-tumor); color: var(--color-no-tumor); }
+.btn-sample[data-sample="schwannoma"] { border-color: var(--color-schwannoma); color: var(--color-schwannoma); }
+.btn-sample[data-sample="neurocytoma"] { border-color: var(--color-neurocytoma); color: var(--color-neurocytoma); }
+.btn-sample[data-sample="carcinoma"] { border-color: var(--color-carcinoma); color: var(--color-carcinoma); }
+.btn-sample[data-sample="papilloma"] { border-color: var(--color-papilloma); color: var(--color-papilloma); }
 
 .btn-sample:hover {
   color: white;
@@ -462,6 +466,10 @@ img {
 .btn-sample[data-sample="meningioma"]:hover { background: var(--color-meningioma); }
 .btn-sample[data-sample="pituitary"]:hover { background: var(--color-pituitary); }
 .btn-sample[data-sample="no_tumor"]:hover { background: var(--color-no-tumor); }
+.btn-sample[data-sample="schwannoma"]:hover { background: var(--color-schwannoma); }
+.btn-sample[data-sample="neurocytoma"]:hover { background: var(--color-neurocytoma); }
+.btn-sample[data-sample="carcinoma"]:hover { background: var(--color-carcinoma); }
+.btn-sample[data-sample="papilloma"]:hover { background: var(--color-papilloma); }
 
 /* ===================================
    RESULT CARD
@@ -1033,6 +1041,10 @@ img {
 .expected-mri-label.meningioma { background: var(--color-meningioma); }
 .expected-mri-label.pituitary { background: var(--color-pituitary); }
 .expected-mri-label.no_tumor { background: var(--color-no-tumor); }
+.expected-mri-label.schwannoma { background: var(--color-schwannoma); }
+.expected-mri-label.neurocytoma { background: var(--color-neurocytoma); }
+.expected-mri-label.carcinoma { background: var(--color-carcinoma); }
+.expected-mri-label.papilloma { background: var(--color-papilloma); }
 
 /* ===================================
    DISCLAIMER
