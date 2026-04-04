@@ -20,8 +20,13 @@
   <header class="header">
     <div class="container header-content">
       <a href="#" class="logo" id="logo-link">
-        <i data-lucide="brain"></i>
-        <span>NeuroScan</span>
+        <div class="logo-icon">
+          <i data-lucide="brain"></i>
+        </div>
+        <div class="logo-text">
+          <span class="logo-name">NeuroScan</span>
+          <span class="logo-tagline">Brain Tumor Classification</span>
+        </div>
       </a>
       <nav class="nav-tabs">
         <button class="nav-tab active" data-view="classify">
@@ -54,12 +59,16 @@
 
     <!-- Classify View -->
     <div class="view active" id="view-classify">
+      <div class="hero-banner">
+        <div class="container">
+          <h1 class="hero-title">Brain MRI Classification</h1>
+          <p class="hero-desc">Upload a brain MRI scan for AI-powered classification across 4 tumor categories with glioma subtype analysis, powered by a two-stage EfficientNet-B0 pipeline trained on 13,000+ clinical images.</p>
+        </div>
+      </div>
       <div class="container">
         <div class="classify-layout">
           <!-- Upload Section -->
           <div class="upload-section" id="upload-section">
-            <h1>Classify Brain MRI</h1>
-            <p class="subtitle">Upload a brain MRI scan to classify it as glioma, meningioma, pituitary tumor, or healthy tissue.</p>
 
             <div class="disclaimer">
               <i data-lucide="alert-triangle"></i>
@@ -187,9 +196,13 @@
 
     <!-- History View -->
     <div class="view" id="view-history">
+      <div class="hero-banner">
+        <div class="container">
+          <h1 class="hero-title">Prediction History</h1>
+          <p class="hero-desc">Previous classifications stored in the database.</p>
+        </div>
+      </div>
       <div class="container">
-        <h1>Prediction History</h1>
-        <p class="subtitle">Previous classifications stored in the database.</p>
         <div class="history-grid" id="history-grid"></div>
         <div class="history-empty hidden" id="history-empty">
           <i data-lucide="inbox"></i>
@@ -201,9 +214,13 @@
 
     <!-- Stats View -->
     <div class="view" id="view-stats">
+      <div class="hero-banner">
+        <div class="container">
+          <h1 class="hero-title">Dashboard</h1>
+          <p class="hero-desc">Aggregate statistics from all predictions.</p>
+        </div>
+      </div>
       <div class="container">
-        <h1>Dashboard</h1>
-        <p class="subtitle">Aggregate statistics from all predictions.</p>
         <div class="stats-grid" id="stats-grid">
           <div class="stat-card">
             <div class="stat-icon"><i data-lucide="hash"></i></div>
@@ -227,13 +244,16 @@
         </div>
       </div>
     </div>
-  </main>
 
     <!-- About View -->
     <div class="view" id="view-about">
+      <div class="hero-banner">
+        <div class="container">
+          <h1 class="hero-title">About This Model</h1>
+          <p class="hero-desc">How NeuroScan works under the hood.</p>
+        </div>
+      </div>
       <div class="container">
-        <h1>About This Model</h1>
-        <p class="subtitle">How NeuroScan works under the hood.</p>
 
         <div class="about-grid">
           <div class="about-card">
@@ -279,6 +299,7 @@
         </div>
       </div>
     </div>
+  </main>
 
   <!-- History Detail Modal -->
   <div class="modal-overlay hidden" id="modal-overlay">
