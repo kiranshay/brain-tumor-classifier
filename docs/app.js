@@ -387,7 +387,7 @@ function displayResult(result, file) {
 
   // Second opinion notice when model is uncertain
   const secondOpinion = document.getElementById("second-opinion");
-  if (result.confidence < 0.85) {
+  if (result.confidence < 0.75) {
     const sorted = Object.entries(result.all_confidences)
       .sort((a, b) => b[1] - a[1]);
     const runner_up = sorted[1];
