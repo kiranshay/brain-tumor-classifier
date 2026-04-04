@@ -220,19 +220,19 @@
         <div class="about-grid">
           <div class="about-card">
             <h3><i data-lucide="cpu"></i> Architecture</h3>
-            <p>EfficientNet-B0 pre-trained on ImageNet with a custom classifier head fine-tuned for brain tumor classification. The backbone feature layers are frozen; only the final classification layer is trained.</p>
+            <p>Two-stage hierarchical classification using EfficientNet-B0 models. Stage 1 classifies MRIs into 4 broad categories (glioma, meningioma, pituitary, no tumor) at 97% accuracy. When a glioma is detected, Stage 2 identifies the subtype (astrocytoma, glioblastoma, oligodendroglioma, or ependymoma) at 95.7% accuracy. Both models are fully fine-tuned from ImageNet pretrained weights.</p>
           </div>
           <div class="about-card">
             <h3><i data-lucide="database"></i> Dataset</h3>
-            <p>Trained on the Brain Tumor MRI Dataset from Kaggle containing ~7,000 axial brain MRI images across 4 classes: glioma, meningioma, pituitary tumor, and no tumor.</p>
+            <p>Stage 1 is trained on 13,214 MRI images combined from three sources: the Brain Tumor MRI Dataset (Kaggle), the BRISC dataset (axial, sagittal, and coronal orientations), and the 44-class Brain Tumor MRI dataset. Stage 2 is trained on 925 glioma subtype images from the 44-class dataset. Multiple data sources improve generalization across MRI styles and orientations.</p>
           </div>
           <div class="about-card">
             <h3><i data-lucide="layers"></i> Pipeline</h3>
-            <p>Images are resized to 224x224, normalized with ImageNet statistics, and passed through the model. The output is a softmax probability distribution across the 4 classes.</p>
+            <p>Uploaded images are preprocessed (black border cropping, resize to 224x224, ImageNet normalization) and passed through the Stage 1 model. If classified as glioma, the same preprocessed image is passed through the Stage 2 subtype model. Both outputs include softmax probability distributions with confidence scores for all classes.</p>
           </div>
           <div class="about-card">
             <h3><i data-lucide="alert-circle"></i> Limitations</h3>
-            <p>This model only classifies into 4 broad categories. It cannot identify specific tumor subtypes, and performance may vary on MRI scans with different orientations, contrast settings, or annotations.</p>
+            <p>Stage 1 classifies into 4 broad categories; subtype classification is only available for gliomas. Meningioma and pituitary subtype information is educational only. Performance may vary on images with annotations, text overlays, or significant visual differences from training data. This is an educational tool and should not be used for medical diagnosis.</p>
           </div>
         </div>
 
@@ -241,6 +241,8 @@
           <div class="tech-tags">
             <span class="tech-tag">PyTorch</span>
             <span class="tech-tag">EfficientNet-B0</span>
+            <span class="tech-tag">Transfer Learning</span>
+            <span class="tech-tag">Hierarchical Classification</span>
             <span class="tech-tag">FastAPI</span>
             <span class="tech-tag">Supabase</span>
             <span class="tech-tag">PostgreSQL</span>
