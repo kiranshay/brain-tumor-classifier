@@ -770,6 +770,37 @@ img {
 }
 
 /* ===================================
+   SUBTYPE SECTION
+   =================================== */
+
+.subtype-section {
+  border-top: 2px solid var(--color-glioma);
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+}
+
+.subtype-header {
+  margin-bottom: 1rem;
+}
+
+.subtype-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  color: var(--color-glioma);
+}
+
+.subtype-header h3 svg {
+  width: 20px;
+  height: 20px;
+}
+
+.subtype-section .result-info {
+  margin-top: 1rem;
+}
+
+/* ===================================
    EXPECTED MRIS
    =================================== */
 

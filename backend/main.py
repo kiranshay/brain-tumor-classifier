@@ -61,14 +61,21 @@ async def predict_tumor(file: UploadFile = File(...)):
 
     thumbnail = make_thumbnail_base64(image_bytes)
 
-    db_row = insert_prediction({
+    db_data = {
         "predicted_class": result["predicted_class"],
         "confidence": result["confidence"],
         "all_confidences": result["all_confidences"],
         "thumbnail_base64": thumbnail,
         "original_filename": file.filename,
         "inference_time_ms": result["inference_time_ms"],
-    })
+    }
+
+    if "subtype" in result:
+        db_data["subtype"] = result["subtype"]
+        db_data["subtype_confidence"] = result["subtype_confidence"]
+        db_data["subtype_confidences"] = result["subtype_confidences"]
+
+    db_row = insert_prediction(db_data)
 
     return PredictionResponse(
         id=db_row["id"],
@@ -77,6 +84,9 @@ async def predict_tumor(file: UploadFile = File(...)):
         all_confidences=result["all_confidences"],
         inference_time_ms=result["inference_time_ms"],
         original_filename=file.filename or "unknown",
+        subtype=result.get("subtype"),
+        subtype_confidence=result.get("subtype_confidence"),
+        subtype_confidences=result.get("subtype_confidences"),
     )
 
 

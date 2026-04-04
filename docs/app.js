@@ -17,6 +17,19 @@ const TUMOR_INFO = {
 
 const CLASS_ORDER = ["glioma", "meningioma", "pituitary", "no_tumor"];
 
+const SUBTYPE_ORDER = ["astrocytoma", "ependymoma", "glioblastoma", "oligodendroglioma"];
+
+const SUBTYPE_INFO = {
+  astrocytoma:
+    "Astrocytomas arise from star-shaped glial cells called astrocytes. They range from low-grade (pilocytic astrocytoma, grade I) to high-grade (anaplastic astrocytoma, grade III). Lower grades are more common in children and young adults.",
+  glioblastoma:
+    "Glioblastoma (grade IV) is the most aggressive and common malignant brain tumor in adults. It grows rapidly, infiltrates surrounding tissue, and is highly resistant to treatment. Median survival is 12-18 months with standard therapy.",
+  oligodendroglioma:
+    "Oligodendrogliomas develop from oligodendrocytes, the cells that produce the myelin sheath protecting nerve fibers. They tend to be slow-growing and are often associated with better prognosis than other gliomas, especially those with IDH mutations and 1p/19q co-deletion.",
+  ependymoma:
+    "Ependymomas arise from ependymal cells lining the ventricles of the brain and the central canal of the spinal cord. They are more common in children and can obstruct cerebrospinal fluid flow, leading to increased intracranial pressure.",
+};
+
 // ===================================
 // State
 // ===================================
@@ -273,6 +286,35 @@ function displayResult(result, file) {
     `${result.inference_time_ms.toFixed(0)}ms inference`;
   document.getElementById("result-filename").textContent =
     result.original_filename || file.name;
+
+  // Subtype section (only for glioma)
+  const subtypeSection = document.getElementById("subtype-section");
+  if (result.subtype && result.subtype_confidences) {
+    subtypeSection.classList.remove("hidden");
+
+    document.getElementById("subtype-badge").textContent = formatClassName(result.subtype);
+    document.getElementById("subtype-confidence").textContent =
+      `${(result.subtype_confidence * 100).toFixed(1)}%`;
+
+    const subtypeBars = document.getElementById("subtype-bars");
+    subtypeBars.innerHTML = SUBTYPE_ORDER.map((cls) => {
+      const pct = ((result.subtype_confidences[cls] || 0) * 100).toFixed(1);
+      return `
+        <div class="confidence-bar-row">
+          <span class="confidence-label">${formatClassName(cls)}</span>
+          <div class="confidence-track">
+            <div class="confidence-fill glioma" style="width: ${pct}%"></div>
+          </div>
+          <span class="confidence-pct">${pct}%</span>
+        </div>
+      `;
+    }).join("");
+
+    document.getElementById("subtype-info").textContent =
+      SUBTYPE_INFO[result.subtype] || "";
+  } else {
+    subtypeSection.classList.add("hidden");
+  }
 
   // Info blurb
   document.getElementById("result-info").textContent =

@@ -8,6 +8,9 @@ class PredictionResponse(BaseModel):
     all_confidences: dict[str, float]
     inference_time_ms: float
     original_filename: str
+    subtype: str | None = None
+    subtype_confidence: float | None = None
+    subtype_confidences: dict[str, float] | None = None
 
 
 class PredictionHistoryItem(BaseModel):
@@ -19,6 +22,9 @@ class PredictionHistoryItem(BaseModel):
     thumbnail_base64: str | None
     original_filename: str | None
     inference_time_ms: float
+    subtype: str | None = None
+    subtype_confidence: float | None = None
+    subtype_confidences: dict[str, float] | None = None
 
 
 class StatsResponse(BaseModel):
