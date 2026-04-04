@@ -66,7 +66,6 @@ async def predict_tumor(file: UploadFile = File(...)):
         "confidence": result["confidence"],
         "all_confidences": result["all_confidences"],
         "thumbnail_base64": thumbnail,
-        "original_filename": file.filename,
         "inference_time_ms": result["inference_time_ms"],
     }
 
