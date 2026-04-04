@@ -11,6 +11,8 @@ class PredictionResponse(BaseModel):
     subtype: str | None = None
     subtype_confidence: float | None = None
     subtype_confidences: dict[str, float] | None = None
+    gradcam: str | None = None
+    subtype_gradcam: str | None = None
 
 
 class PredictionHistoryItem(BaseModel):

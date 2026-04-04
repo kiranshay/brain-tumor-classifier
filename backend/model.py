@@ -1,11 +1,17 @@
 import io
 import time
+import base64
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import numpy as np
 from torchvision import models, transforms
 from PIL import Image
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 CLASS_NAMES = ["glioma", "meningioma", "no_tumor", "pituitary"]
 GLIOMA_SUBTYPES = ["astrocytoma", "ependymoma", "glioblastoma", "oligodendroglioma"]
@@ -39,13 +45,11 @@ def load_model(
 ):
     global _model, _glioma_model
 
-    # Stage 1: broad classifier (4 classes)
     _model = _build_efficientnet(4, dropout=0.3)
     state_dict = torch.load(weights_path, map_location="cpu", weights_only=True)
     _model.load_state_dict(state_dict)
     _model.eval()
 
-    # Stage 2: glioma subtype classifier (4 subtypes)
     try:
         _glioma_model = _build_efficientnet(4, dropout=0.4)
         state_dict = torch.load(glioma_weights_path, map_location="cpu", weights_only=True)
@@ -83,6 +87,90 @@ def preprocess_mri(image: Image.Image) -> Image.Image:
     return image
 
 
+def generate_gradcam(model, tensor, predicted_idx) -> str:
+    """Generate a Grad-CAM heatmap and return it as a base64 PNG string.
+
+    Grad-CAM visualizes which regions of the input image the model
+    focused on by looking at the gradients flowing into the last
+    convolutional layer.
+    """
+    # Hook into the last conv layer of EfficientNet-B0
+    target_layer = model.features[-1]
+
+    activations = []
+    gradients = []
+
+    def forward_hook(module, input, output):
+        activations.append(output.detach())
+
+    def backward_hook(module, grad_input, grad_output):
+        gradients.append(grad_output[0].detach())
+
+    fwd_handle = target_layer.register_forward_hook(forward_hook)
+    bwd_handle = target_layer.register_full_backward_hook(backward_hook)
+
+    # Forward pass with gradients enabled
+    tensor_grad = tensor.clone().requires_grad_(True)
+    output = model(tensor_grad)
+    score = output[0, predicted_idx]
+
+    # Backward pass
+    model.zero_grad()
+    score.backward()
+
+    # Remove hooks
+    fwd_handle.remove()
+    bwd_handle.remove()
+
+    # Compute Grad-CAM
+    act = activations[0][0]  # (C, H, W)
+    grad = gradients[0][0]   # (C, H, W)
+
+    # Global average pool the gradients to get channel weights
+    weights = grad.mean(dim=(1, 2))  # (C,)
+
+    # Weighted sum of activation maps
+    gradcam = torch.zeros(act.shape[1:], dtype=act.dtype)
+    for i, w in enumerate(weights):
+        gradcam += w * act[i]
+
+    # ReLU — only keep positive contributions
+    gradcam = F.relu(gradcam)
+
+    # Normalize to [0, 1]
+    if gradcam.max() > 0:
+        gradcam = gradcam / gradcam.max()
+
+    # Resize to input image size
+    gradcam_np = gradcam.numpy()
+    gradcam_resized = np.array(
+        Image.fromarray((gradcam_np * 255).astype(np.uint8)).resize((224, 224), Image.BILINEAR)
+    ) / 255.0
+
+    # Denormalize the original image for overlay
+    img_np = tensor[0].permute(1, 2, 0).numpy()
+    img_np = img_np * np.array(IMAGENET_STD) + np.array(IMAGENET_MEAN)
+    img_np = np.clip(img_np, 0, 1)
+
+    # Create heatmap overlay
+    heatmap = cm.jet(gradcam_resized)[:, :, :3]
+    overlay = 0.55 * img_np + 0.45 * heatmap
+    overlay = np.clip(overlay, 0, 1)
+
+    # Save to base64 PNG
+    fig, ax = plt.subplots(1, 1, figsize=(3, 3), dpi=100)
+    ax.imshow(overlay)
+    ax.axis("off")
+    plt.tight_layout(pad=0)
+
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", bbox_inches="tight", pad_inches=0)
+    plt.close(fig)
+    buf.seek(0)
+
+    return base64.b64encode(buf.getvalue()).decode("utf-8")
+
+
 def predict(image_bytes: bytes) -> dict:
     if _model is None:
         raise RuntimeError("Model not loaded. Call load_model() first.")
@@ -107,10 +195,15 @@ def predict(image_bytes: bytes) -> dict:
         for i in range(len(CLASS_NAMES))
     }
 
+    # Generate Grad-CAM heatmap for stage 1
+    gradcam_base64 = generate_gradcam(_model, tensor, predicted_idx)
+    _model.eval()  # Reset to eval mode after gradcam backward pass
+
     # Stage 2: glioma subtype classification
     subtype = None
     subtype_confidence = None
     subtype_confidences = None
+    subtype_gradcam_base64 = None
 
     if predicted_class == "glioma" and _glioma_model is not None:
         with torch.no_grad():
@@ -125,6 +218,10 @@ def predict(image_bytes: bytes) -> dict:
             for i in range(len(GLIOMA_SUBTYPES))
         }
 
+        # Grad-CAM for subtype model
+        subtype_gradcam_base64 = generate_gradcam(_glioma_model, tensor, sub_idx)
+        _glioma_model.eval()
+
     inference_time_ms = (time.perf_counter() - start) * 1000
 
     result = {
@@ -132,11 +229,13 @@ def predict(image_bytes: bytes) -> dict:
         "confidence": round(confidence, 4),
         "all_confidences": all_confidences,
         "inference_time_ms": round(inference_time_ms, 2),
+        "gradcam": gradcam_base64,
     }
 
     if subtype is not None:
         result["subtype"] = subtype
         result["subtype_confidence"] = subtype_confidence
         result["subtype_confidences"] = subtype_confidences
+        result["subtype_gradcam"] = subtype_gradcam_base64
 
     return result

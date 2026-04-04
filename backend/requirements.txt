@@ -4,6 +4,7 @@ uvicorn
 torch
 torchvision
 Pillow
+matplotlib
 supabase
 python-dotenv
 python-multipart

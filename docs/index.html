@@ -117,8 +117,15 @@
                 </button>
               </div>
 
-              <div class="result-image-row">
-                <img id="result-image" alt="Uploaded MRI scan">
+              <div class="result-images-row">
+                <div class="result-image-col">
+                  <img id="result-image" alt="Uploaded MRI scan">
+                  <span class="image-label">Original MRI</span>
+                </div>
+                <div class="result-image-col">
+                  <img id="result-gradcam" alt="Grad-CAM heatmap" class="hidden">
+                  <span class="image-label">Grad-CAM Heatmap</span>
+                </div>
               </div>
 
               <div class="result-prediction">
@@ -141,6 +148,10 @@
               <div class="subtype-section hidden" id="subtype-section">
                 <div class="subtype-header">
                   <h3><i data-lucide="git-branch"></i> Glioma Subtype Classification</h3>
+                </div>
+                <div class="result-image-col subtype-gradcam-col hidden" id="subtype-gradcam-col">
+                  <img id="subtype-gradcam" alt="Subtype Grad-CAM heatmap">
+                  <span class="image-label">Subtype Grad-CAM</span>
                 </div>
                 <div class="result-prediction">
                   <span class="result-badge glioma" id="subtype-badge"></span>

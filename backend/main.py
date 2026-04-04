@@ -87,6 +87,8 @@ async def predict_tumor(file: UploadFile = File(...)):
         subtype=result.get("subtype"),
         subtype_confidence=result.get("subtype_confidence"),
         subtype_confidences=result.get("subtype_confidences"),
+        gradcam=result.get("gradcam"),
+        subtype_gradcam=result.get("subtype_gradcam"),
     )
 
 

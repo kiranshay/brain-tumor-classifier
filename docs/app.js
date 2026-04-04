@@ -257,6 +257,15 @@ function displayResult(result, file) {
   const imgEl = document.getElementById("result-image");
   imgEl.src = URL.createObjectURL(file);
 
+  // Grad-CAM heatmap
+  const gradcamEl = document.getElementById("result-gradcam");
+  if (result.gradcam) {
+    gradcamEl.src = `data:image/png;base64,${result.gradcam}`;
+    gradcamEl.classList.remove("hidden");
+  } else {
+    gradcamEl.classList.add("hidden");
+  }
+
   // Badge
   const badge = document.getElementById("result-badge");
   badge.textContent = formatClassName(result.predicted_class);
@@ -312,6 +321,15 @@ function displayResult(result, file) {
 
     document.getElementById("subtype-info").textContent =
       SUBTYPE_INFO[result.subtype] || "";
+
+    // Subtype Grad-CAM
+    const subtypeGradcamCol = document.getElementById("subtype-gradcam-col");
+    if (result.subtype_gradcam) {
+      document.getElementById("subtype-gradcam").src = `data:image/png;base64,${result.subtype_gradcam}`;
+      subtypeGradcamCol.classList.remove("hidden");
+    } else {
+      subtypeGradcamCol.classList.add("hidden");
+    }
   } else {
     subtypeSection.classList.add("hidden");
   }
