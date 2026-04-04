@@ -166,11 +166,44 @@ function resetClassify() {
 // Classification
 // ===================================
 
+const progressBar = document.getElementById("progress-bar");
+const loadingStatus = document.getElementById("loading-status");
+const loadingStep = document.getElementById("loading-step");
+
+const PROGRESS_STAGES = [
+  { pct: 15, status: "Uploading MRI scan...", step: "Sending image to server" },
+  { pct: 35, status: "Preprocessing image...", step: "Cropping borders and normalizing" },
+  { pct: 55, status: "Running classification...", step: "EfficientNet-B0 inference" },
+  { pct: 75, status: "Analyzing results...", step: "Computing confidence scores" },
+  { pct: 90, status: "Saving to database...", step: "Storing prediction in Supabase" },
+];
+
+function updateProgress(stageIndex) {
+  const stage = PROGRESS_STAGES[stageIndex];
+  if (stage) {
+    progressBar.style.width = stage.pct + "%";
+    loadingStatus.textContent = stage.status;
+    loadingStep.textContent = stage.step;
+  }
+}
+
 async function classifyImage(file) {
   uploadSection.classList.add("hidden");
   resultSection.classList.add("hidden");
   loadingSection.classList.remove("hidden");
+  progressBar.style.width = "0%";
   lucide.createIcons();
+
+  // Animate through stages while waiting for the API
+  let currentStage = 0;
+  updateProgress(0);
+
+  const progressInterval = setInterval(() => {
+    currentStage++;
+    if (currentStage < PROGRESS_STAGES.length) {
+      updateProgress(currentStage);
+    }
+  }, 2000);
 
   const formData = new FormData();
   formData.append("file", file);
@@ -181,14 +214,22 @@ async function classifyImage(file) {
       body: formData,
     });
 
+    clearInterval(progressInterval);
+
     if (!res.ok) {
       const err = await res.json().catch(() => ({ detail: "Unknown error" }));
       throw new Error(err.detail || `Server error: ${res.status}`);
     }
 
+    // Fill to 100%
+    progressBar.style.width = "100%";
+    loadingStatus.textContent = "Classification complete!";
+    loadingStep.textContent = "Preparing results";
+
     const result = await res.json();
-    displayResult(result, file);
+    setTimeout(() => displayResult(result, file), 400);
   } catch (err) {
+    clearInterval(progressInterval);
     loadingSection.classList.add("hidden");
     uploadSection.classList.remove("hidden");
     alert(`Classification failed: ${err.message}`);

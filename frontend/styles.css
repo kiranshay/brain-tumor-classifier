@@ -546,9 +546,35 @@ img {
   text-align: center;
 }
 
-.loading-card p {
+.loading-status {
   margin-top: 1rem;
-  color: var(--color-text-secondary);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: 1.05rem;
+}
+
+.loading-step {
+  font-size: 0.8rem;
+  color: var(--color-text-tertiary);
+  margin-top: 0.5rem;
+}
+
+.progress-bar-track {
+  width: 100%;
+  max-width: 320px;
+  height: 8px;
+  background: var(--color-gray-200);
+  border-radius: 4px;
+  margin: 1.25rem auto 0;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--color-primary-500), var(--color-secondary-500));
+  border-radius: 4px;
+  transition: width 0.4s ease;
 }
 
 .spinner {

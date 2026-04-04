@@ -141,7 +141,11 @@
           <div class="loading-section hidden" id="loading-section">
             <div class="loading-card">
               <i data-lucide="loader" class="spinner"></i>
-              <p>Analyzing MRI scan...</p>
+              <p class="loading-status" id="loading-status">Uploading MRI scan...</p>
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progress-bar"></div>
+              </div>
+              <p class="loading-step" id="loading-step">Preparing image</p>
             </div>
           </div>
         </div>
