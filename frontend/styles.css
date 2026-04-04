@@ -779,6 +779,31 @@ img {
 }
 
 /* ===================================
+   SECOND OPINION
+   =================================== */
+
+.second-opinion {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  background: #FEF3C7;
+  border: 1px solid #FCD34D;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: #92400E;
+  line-height: 1.6;
+}
+
+.second-opinion svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ===================================
    SUBTYPE SECTION
    =================================== */
 

@@ -8,9 +8,9 @@ const TUMOR_INFO = {
   glioma:
     "Gliomas are tumors that arise from glial cells in the brain or spine. They are the most common type of primary brain tumor and can vary significantly in aggressiveness, from low-grade (slow-growing) to high-grade (fast-growing) forms like glioblastoma.",
   meningioma:
-    "Meningiomas originate in the meninges, the membranes surrounding the brain and spinal cord. They are usually slow-growing and often benign, making up about 30% of all brain tumors. Many are discovered incidentally and may only require monitoring.",
+    "Meningiomas originate in the meninges, the membranes surrounding the brain and spinal cord. They are usually slow-growing and often benign, making up about 30% of all brain tumors. Common subtypes include: Low Grade (Grade I) — the most common, slow-growing and typically benign; Atypical (Grade II) — faster-growing with higher recurrence risk; Anaplastic (Grade III) — rare and malignant; and Transitional — a benign variant with mixed tissue patterns.",
   pituitary:
-    "Pituitary tumors develop in the pituitary gland at the base of the brain. Most are benign adenomas that can affect hormone production. Depending on their size and hormone activity, they may cause vision problems or hormonal imbalances.",
+    "Pituitary tumors develop in the pituitary gland at the base of the brain. Most are benign adenomas. Common subtypes include: Prolactinoma — the most common, overproduces prolactin; Non-functioning adenoma — does not secrete hormones but can cause symptoms through mass effect; Growth hormone-secreting (Acromegaly) — causes excess growth; and ACTH-secreting (Cushing's disease) — causes excess cortisol production. Classification depends on hormonal activity and size (microadenoma <10mm, macroadenoma >10mm).",
   no_tumor:
     "No tumor detected in this MRI scan. The brain tissue appears within normal parameters based on the model's classification. Note: this tool is for educational purposes only and should not be used as a medical diagnostic.",
 };
@@ -319,6 +319,22 @@ function displayResult(result, file) {
   // Info blurb
   document.getElementById("result-info").textContent =
     TUMOR_INFO[result.predicted_class] || "";
+
+  // Second opinion notice when model is uncertain
+  const secondOpinion = document.getElementById("second-opinion");
+  if (result.confidence < 0.85) {
+    const sorted = Object.entries(result.all_confidences)
+      .sort((a, b) => b[1] - a[1]);
+    const runner_up = sorted[1];
+    if (runner_up && runner_up[1] > 0.1) {
+      secondOpinion.classList.remove("hidden");
+      secondOpinion.innerHTML = `<i data-lucide="alert-circle"></i> <span>The model is not highly confident in this prediction. Second-most likely class: <strong>${formatClassName(runner_up[0])}</strong> at ${(runner_up[1] * 100).toFixed(1)}%.</span>`;
+    } else {
+      secondOpinion.classList.add("hidden");
+    }
+  } else {
+    secondOpinion.classList.add("hidden");
+  }
 
   lucide.createIcons();
 }
