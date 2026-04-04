@@ -800,6 +800,10 @@ img {
   margin-top: 1rem;
 }
 
+.subtype-section .confidence-label {
+  width: 140px;
+}
+
 /* ===================================
    EXPECTED MRIS
    =================================== */
