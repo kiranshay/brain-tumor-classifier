@@ -13,7 +13,7 @@ matplotlib.use("Agg")
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 
-CLASS_NAMES = ["glioma", "meningioma", "no_tumor", "pituitary"]
+CLASS_NAMES = ["carcinoma", "glioma", "meningioma", "neurocytoma", "no_tumor", "papilloma", "pituitary", "schwannoma"]
 GLIOMA_SUBTYPES = ["astrocytoma", "ependymoma", "glioblastoma", "oligodendroglioma"]
 
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
@@ -44,7 +44,7 @@ def load_model(
 ):
     global _model, _glioma_model
 
-    _model = _build_efficientnet(4, dropout=0.3)
+    _model = _build_efficientnet(8, dropout=0.3)
     state_dict = torch.load(weights_path, map_location="cpu", weights_only=True)
     _model.load_state_dict(state_dict)
     _model.eval()

@@ -44,6 +44,10 @@
   --color-meningioma: #F59E0B;
   --color-pituitary: #8B5CF6;
   --color-no-tumor: #10B981;
+  --color-schwannoma: #EC4899;
+  --color-neurocytoma: #06B6D4;
+  --color-carcinoma: #DC2626;
+  --color-papilloma: #F97316;
 
   --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -555,6 +559,10 @@ img {
 .result-badge.meningioma { background: var(--color-meningioma); }
 .result-badge.pituitary { background: var(--color-pituitary); }
 .result-badge.no_tumor { background: var(--color-no-tumor); }
+.result-badge.schwannoma { background: var(--color-schwannoma); }
+.result-badge.neurocytoma { background: var(--color-neurocytoma); }
+.result-badge.carcinoma { background: var(--color-carcinoma); }
+.result-badge.papilloma { background: var(--color-papilloma); }
 
 .result-confidence {
   font-family: var(--font-mono);
@@ -605,6 +613,10 @@ img {
 .confidence-fill.meningioma { background: var(--color-meningioma); }
 .confidence-fill.pituitary { background: var(--color-pituitary); }
 .confidence-fill.no_tumor { background: var(--color-no-tumor); }
+.confidence-fill.schwannoma { background: var(--color-schwannoma); }
+.confidence-fill.neurocytoma { background: var(--color-neurocytoma); }
+.confidence-fill.carcinoma { background: var(--color-carcinoma); }
+.confidence-fill.papilloma { background: var(--color-papilloma); }
 
 .confidence-pct {
   width: 50px;
@@ -756,6 +768,10 @@ img {
 .history-class.meningioma { background: var(--color-meningioma); }
 .history-class.pituitary { background: var(--color-pituitary); }
 .history-class.no_tumor { background: var(--color-no-tumor); }
+.history-class.schwannoma { background: var(--color-schwannoma); }
+.history-class.neurocytoma { background: var(--color-neurocytoma); }
+.history-class.carcinoma { background: var(--color-carcinoma); }
+.history-class.papilloma { background: var(--color-papilloma); }
 
 .history-confidence {
   font-family: var(--font-mono);
@@ -890,6 +906,10 @@ img {
 .dist-fill.meningioma { background: var(--color-meningioma); }
 .dist-fill.pituitary { background: var(--color-pituitary); }
 .dist-fill.no_tumor { background: var(--color-no-tumor); }
+.dist-fill.schwannoma { background: var(--color-schwannoma); }
+.dist-fill.neurocytoma { background: var(--color-neurocytoma); }
+.dist-fill.carcinoma { background: var(--color-carcinoma); }
+.dist-fill.papilloma { background: var(--color-papilloma); }
 
 .dist-count {
   width: 40px;

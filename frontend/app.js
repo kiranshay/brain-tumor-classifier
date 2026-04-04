@@ -10,12 +10,20 @@ const TUMOR_INFO = {
   meningioma:
     "Meningiomas originate in the meninges, the membranes surrounding the brain and spinal cord. They are usually slow-growing and often benign, making up about 30% of all brain tumors. Common subtypes include: Low Grade (Grade I) — the most common, slow-growing and typically benign; Atypical (Grade II) — faster-growing with higher recurrence risk; Anaplastic (Grade III) — rare and malignant; and Transitional — a benign variant with mixed tissue patterns.",
   pituitary:
-    "Pituitary tumors develop in the pituitary gland at the base of the brain. Most are benign adenomas. Common subtypes include: Prolactinoma — the most common, overproduces prolactin; Non-functioning adenoma — does not secrete hormones but can cause symptoms through mass effect; Growth hormone-secreting (Acromegaly) — causes excess growth; and ACTH-secreting (Cushing's disease) — causes excess cortisol production. Classification depends on hormonal activity and size (microadenoma <10mm, macroadenoma >10mm).",
+    "Pituitary tumors develop in the pituitary gland at the base of the brain. Most are benign adenomas. Common subtypes include: Prolactinoma — the most common, overproduces prolactin; Non-functioning adenoma — does not secrete hormones but can cause symptoms through mass effect; Growth hormone-secreting (Acromegaly) — causes excess growth; and ACTH-secreting (Cushing's disease) — causes excess cortisol production.",
   no_tumor:
     "No tumor detected in this MRI scan. The brain tissue appears within normal parameters based on the model's classification. Note: this tool is for educational purposes only and should not be used as a medical diagnostic.",
+  schwannoma:
+    "Schwannomas are tumors that develop from Schwann cells, which produce the myelin sheath insulating nerves. The most common type is vestibular schwannoma (acoustic neuroma), which grows on the nerve connecting the ear to the brain. They are typically benign, slow-growing, and treatable with surgery or radiation.",
+  neurocytoma:
+    "Neurocytomas are rare, typically benign tumors composed of mature neurons. Central neurocytomas arise within the brain's ventricles, most often in young adults. They can obstruct cerebrospinal fluid flow, causing headaches and hydrocephalus. Prognosis is generally favorable with surgical resection.",
+  carcinoma:
+    "Brain carcinomas are malignant tumors that can arise from various cell types in or near the brain, including choroid plexus carcinoma. They tend to be aggressive and may require a combination of surgery, radiation, and chemotherapy for treatment.",
+  papilloma:
+    "Choroid plexus papillomas are benign tumors arising from the choroid plexus tissue within the brain's ventricles. They are most common in children and can cause hydrocephalus by overproducing cerebrospinal fluid or obstructing its flow. Surgical removal is typically curative.",
 };
 
-const CLASS_ORDER = ["glioma", "meningioma", "pituitary", "no_tumor"];
+const CLASS_ORDER = ["glioma", "meningioma", "pituitary", "schwannoma", "neurocytoma", "carcinoma", "papilloma", "no_tumor"];
 
 const SUBTYPE_ORDER = ["astrocytoma", "ependymoma", "glioblastoma", "oligodendroglioma"];
 
@@ -632,6 +640,19 @@ document.addEventListener("keydown", (e) => {
 // ===================================
 
 function formatClassName(cls) {
-  if (cls === "no_tumor") return "No Tumor";
-  return cls.charAt(0).toUpperCase() + cls.slice(1);
+  const names = {
+    no_tumor: "No Tumor",
+    glioma: "Glioma",
+    meningioma: "Meningioma",
+    pituitary: "Pituitary",
+    schwannoma: "Schwannoma",
+    neurocytoma: "Neurocytoma",
+    carcinoma: "Carcinoma",
+    papilloma: "Papilloma",
+    astrocytoma: "Astrocytoma",
+    glioblastoma: "Glioblastoma",
+    oligodendroglioma: "Oligodendroglioma",
+    ependymoma: "Ependymoma",
+  };
+  return names[cls] || cls.charAt(0).toUpperCase() + cls.slice(1);
 }

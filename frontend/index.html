@@ -63,7 +63,7 @@
       <div class="hero-banner">
         <div class="container">
           <h1 class="hero-title">Brain MRI Classification</h1>
-          <p class="hero-desc">Upload a brain MRI scan for AI-powered classification across 4 tumor categories with glioma subtype analysis, powered by a two-stage EfficientNet-B0 pipeline trained on 13,000+ clinical images.</p>
+          <p class="hero-desc">Upload a brain MRI scan for AI-powered classification across 8 tumor categories with glioma subtype analysis, powered by a two-stage EfficientNet-B0 pipeline trained on 15,000+ clinical images.</p>
         </div>
       </div>
       <div class="container">
@@ -259,19 +259,19 @@
         <div class="about-grid">
           <div class="about-card">
             <h3><i data-lucide="cpu"></i> Architecture</h3>
-            <p>Two-stage hierarchical classification using EfficientNet-B0 models. Stage 1 classifies MRIs into 4 broad categories (glioma, meningioma, pituitary, no tumor) at 97% accuracy. When a glioma is detected, Stage 2 identifies the subtype (astrocytoma, glioblastoma, oligodendroglioma, or ependymoma) at 95.7% accuracy. Both models are fully fine-tuned from ImageNet pretrained weights.</p>
+            <p>Two-stage hierarchical classification using EfficientNet-B0 models. Stage 1 classifies MRIs into 8 categories (glioma, meningioma, pituitary, schwannoma, neurocytoma, carcinoma, papilloma, and no tumor) at 95.5% accuracy. When a glioma is detected, Stage 2 identifies the subtype (astrocytoma, glioblastoma, oligodendroglioma, or ependymoma) at 95.7% accuracy. Both models are fully fine-tuned from ImageNet pretrained weights. On-demand Grad-CAM heatmaps visualize which brain regions the model focused on.</p>
           </div>
           <div class="about-card">
             <h3><i data-lucide="database"></i> Dataset</h3>
-            <p>Stage 1 is trained on 13,214 MRI images combined from three sources: the Brain Tumor MRI Dataset (Kaggle), the BRISC dataset (axial, sagittal, and coronal orientations), and the 44-class Brain Tumor MRI dataset. Stage 2 is trained on 925 glioma subtype images from the 44-class dataset. Multiple data sources improve generalization across MRI styles and orientations.</p>
+            <p>Stage 1 is trained on 15,467 MRI images combined from three sources: the Brain Tumor MRI Dataset (Kaggle), the BRISC dataset (axial, sagittal, and coronal orientations), and the 44-class Brain Tumor MRI dataset. Stage 2 is trained on 925 glioma subtype images from the 44-class dataset. Multiple data sources improve generalization across MRI styles and orientations.</p>
           </div>
           <div class="about-card">
             <h3><i data-lucide="layers"></i> Pipeline</h3>
-            <p>Uploaded images are preprocessed (black border cropping, resize to 224x224, ImageNet normalization) and passed through the Stage 1 model. If classified as glioma, the same preprocessed image is passed through the Stage 2 subtype model. Both outputs include softmax probability distributions with confidence scores for all classes.</p>
+            <p>Uploaded images are preprocessed (black border cropping, resize to 224x224, ImageNet normalization) and passed through the Stage 1 model. If classified as glioma, the same preprocessed image is passed through the Stage 2 subtype model. Both outputs include softmax probability distributions with confidence scores for all classes. Grad-CAM heatmaps can be generated on demand to show model attention regions.</p>
           </div>
           <div class="about-card">
             <h3><i data-lucide="alert-circle"></i> Limitations</h3>
-            <p>Stage 1 classifies into 4 broad categories; subtype classification is only available for gliomas. Meningioma and pituitary subtype information is educational only. Performance may vary on images with annotations, text overlays, or significant visual differences from training data. This is an educational tool and should not be used for medical diagnosis.</p>
+            <p>Glioma subtype classification is available; meningioma and pituitary subtype information is educational only. Performance may vary on images with annotations, text overlays, or significant visual differences from training data. This is an educational tool and should not be used for medical diagnosis.</p>
           </div>
         </div>
 
