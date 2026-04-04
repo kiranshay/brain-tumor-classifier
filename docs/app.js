@@ -559,8 +559,13 @@ function openHistoryDetail(item) {
 
   document.getElementById("modal-time").textContent =
     `${item.inference_time_ms.toFixed(0)}ms inference`;
-  document.getElementById("modal-filename").textContent =
-    item.original_filename || "Unknown";
+  const modalFilenameEl = document.getElementById("modal-filename").parentElement;
+  if (item.original_filename) {
+    modalFilenameEl.style.display = "";
+    document.getElementById("modal-filename").textContent = item.original_filename;
+  } else {
+    modalFilenameEl.style.display = "none";
+  }
 
   const date = new Date(item.created_at);
   document.getElementById("modal-date").textContent = date.toLocaleDateString("en-US", {
