@@ -251,13 +251,49 @@ def infer_patient_ids(files: list[Path]) -> tuple[dict[Path, str], str, bool]:
             best_mapping = mapping
             best_name = name
 
-    reliable = best_unique < len(files)
+    # Reliability check. The earlier version of this function only
+    # required best_unique < len(files) -- i.e. "did ANY two files end
+    # up in the same group". That is way too lenient on content-hash
+    # filenames (data44 is full of SHA-256-prefixed names like
+    # ``01809e58...jpeg``), where leading-digit collisions happen by
+    # accident even though the filenames carry no patient information.
+    # The result was bogus "patient counts" in the dataset card and one
+    # data44 class (papilloma) where the random partition put more
+    # images in val than in train because one bogus group absorbed half
+    # the class.
+    #
+    # Real brain MRI patients have many slices each (typically 10+
+    # axial slices per sequence, often across multiple sequences). If
+    # the median group size is 1 -- i.e. more than half of all files
+    # are alone in their group -- the inference is essentially noise
+    # and we should fall back to image-level. We also require a mean
+    # of at least ~3 files per group, since a real per-patient pile of
+    # MRI slices comfortably clears that bar but spurious hash-prefix
+    # collisions do not.
+    from statistics import median
+    group_sizes = list(_group_size_counts(best_mapping).values())
+    med = median(group_sizes) if group_sizes else 0
+    mean = (sum(group_sizes) / len(group_sizes)) if group_sizes else 0
+    reliable = (
+        best_unique < len(files)
+        and med >= 2
+        and mean >= 3.0
+    )
     if not reliable:
-        # No strategy grouped anything -- treat each file as its own
-        # patient (caller will warn and fall back).
+        # Either no strategy grouped anything, or the grouping was so
+        # sparse it can't reflect real patient identity. Treat each
+        # file as its own "patient" so the caller's fallback path
+        # produces a deterministic image-level split with a warning.
         best_mapping = {f: f.stem for f in files}
         best_name = "image_level_fallback"
     return best_mapping, best_name, reliable
+
+
+def _group_size_counts(mapping: dict[Path, str]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for pid in mapping.values():
+        counts[pid] = counts.get(pid, 0) + 1
+    return counts
 
 
 # ---------------------------------------------------------------------------
