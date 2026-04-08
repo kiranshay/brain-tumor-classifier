@@ -1,0 +1,5 @@
+label,class,n_true,recall,recall_lo,recall_hi,n_pred,precision,precision_lo,precision_hi
+leaky_4class,glioma,644,0.987578,0.975681,0.993692,640,0.993750,0.984041,0.997567
+leaky_4class,meningioma,691,0.997106,0.989509,0.999206,699,0.985694,0.973868,0.992211
+leaky_4class,no_tumor,604,0.995033,0.985500,0.998309,609,0.986864,0.974295,0.993329
+leaky_4class,pituitary,362,0.969613,0.946415,0.982949,353,0.994334,0.979580,0.998445
