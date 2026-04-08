@@ -1,0 +1,10 @@
+{
+  "classes": [
+    "glioma",
+    "meningioma",
+    "no_tumor",
+    "pituitary"
+  ],
+  "num_classes": 4,
+  "source": "ImageFolder.classes from train/ at training time"
+}

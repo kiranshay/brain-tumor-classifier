@@ -1,0 +1,14 @@
+{
+  "classes": [
+    "carcinoma",
+    "glioma",
+    "meningioma",
+    "neurocytoma",
+    "no_tumor",
+    "papilloma",
+    "pituitary",
+    "schwannoma"
+  ],
+  "num_classes": 8,
+  "source": "ImageFolder.classes from train/ at training time"
+}

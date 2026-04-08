@@ -1,0 +1,56 @@
+{
+  "mode": "extended",
+  "seed": 42,
+  "args": {
+    "mode": "extended",
+    "data_dir": "/content/clean_dataset/extended_8class",
+    "output_dir": "runs/extended_8class",
+    "epochs": 20,
+    "batch_size": 32,
+    "lr": 5e-05,
+    "weight_decay": 0.01,
+    "dropout": 0.3,
+    "seed": 42,
+    "num_workers": 2
+  },
+  "num_classes": 8,
+  "class_names": [
+    "carcinoma",
+    "glioma",
+    "meningioma",
+    "neurocytoma",
+    "no_tumor",
+    "papilloma",
+    "pituitary",
+    "schwannoma"
+  ],
+  "num_train_images": 10590,
+  "num_val_images": 1976,
+  "num_test_images": 2901,
+  "best_epoch": 19,
+  "best_val_loss": 0.14696440123481608,
+  "best_val_acc": 0.9554655870445344,
+  "final_test_accuracy": 0.947604274388142,
+  "final_test_loss": 0.17378860389090167,
+  "top_confused_pairs": [
+    {
+      "true": "glioma",
+      "predicted": "meningioma",
+      "count": 32
+    },
+    {
+      "true": "glioma",
+      "predicted": "no_tumor",
+      "count": 21
+    },
+    {
+      "true": "meningioma",
+      "predicted": "glioma",
+      "count": 19
+    }
+  ],
+  "total_wall_clock_seconds": 1897.3689312934875,
+  "gpu_name": "Tesla T4",
+  "torch_version": "2.10.0+cu128",
+  "dataset_card_path": "/content/clean_dataset/extended_8class/dataset_card.json"
+}

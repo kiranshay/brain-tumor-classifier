@@ -1,0 +1,52 @@
+{
+  "mode": "trustworthy",
+  "seed": 42,
+  "args": {
+    "mode": "trustworthy",
+    "data_dir": "/content/clean_dataset/trustworthy_4class",
+    "output_dir": "runs/trustworthy_4class",
+    "epochs": 20,
+    "batch_size": 32,
+    "lr": 5e-05,
+    "weight_decay": 0.01,
+    "dropout": 0.3,
+    "seed": 42,
+    "num_workers": 2
+  },
+  "num_classes": 4,
+  "class_names": [
+    "glioma",
+    "meningioma",
+    "no_tumor",
+    "pituitary"
+  ],
+  "num_train_images": 7772,
+  "num_val_images": 1371,
+  "num_test_images": 2300,
+  "best_epoch": 20,
+  "best_val_loss": 0.03408169402638321,
+  "best_val_acc": 0.9883296863603209,
+  "final_test_accuracy": 0.9643478260869566,
+  "final_test_loss": 0.1792837988490077,
+  "top_confused_pairs": [
+    {
+      "true": "glioma",
+      "predicted": "meningioma",
+      "count": 33
+    },
+    {
+      "true": "glioma",
+      "predicted": "no_tumor",
+      "count": 24
+    },
+    {
+      "true": "pituitary",
+      "predicted": "meningioma",
+      "count": 9
+    }
+  ],
+  "total_wall_clock_seconds": 1331.6051964759827,
+  "gpu_name": "Tesla T4",
+  "torch_version": "2.10.0+cu128",
+  "dataset_card_path": "/content/clean_dataset/trustworthy_4class/dataset_card.json"
+}
