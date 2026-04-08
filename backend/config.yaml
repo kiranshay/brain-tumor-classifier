@@ -1,0 +1,90 @@
+# NeuroScan single-source-of-truth configuration.
+# Loaded by neuroscan.config.load_config(). Used by both the FastAPI
+# backend and the training CLI (training/train.py --config ...).
+
+model:
+  image_size: 224
+  normalization:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+
+  stage1:
+    name: tumor_classifier
+    weights_path: tumor_classifier.pth
+    num_classes: 8
+    dropout: 0.3
+    class_names:
+      - carcinoma
+      - glioma
+      - meningioma
+      - neurocytoma
+      - no_tumor
+      - papilloma
+      - pituitary
+      - schwannoma
+    # When stage1 predicts this class, the cascade fires stage2.
+    trigger_class_for_stage2: glioma
+
+  stage2:
+    name: glioma_subtype
+    weights_path: glioma_subtype_classifier.pth
+    num_classes: 4
+    dropout: 0.4
+    class_names:
+      - astrocytoma
+      - ependymoma
+      - glioblastoma
+      - oligodendroglioma
+
+preprocessing:
+  # MRI black-border crop. Pixels with mean intensity above this threshold
+  # are considered "image"; everything else is bezel/letterbox.
+  border_crop_threshold: 15
+  border_crop_pad: 5
+
+thumbnail:
+  size: [128, 128]
+  jpeg_quality: 70
+
+training:
+  # Which stage this training run targets. Selects model.stageN block above
+  # for num_classes / dropout / class_names / weights_path.
+  stage: stage1
+  epochs: 20
+  batch_size: 32
+  num_workers: 2
+  device: auto  # auto | cuda | cpu
+
+  optimizer:
+    lr: 5.0e-5
+    weight_decay: 0.01
+
+  scheduler:
+    t_max: 20
+
+  augmentation:
+    resize: 256
+    crop: 224
+    horizontal_flip: true
+    vertical_flip: true
+    rotation_degrees: 20
+    affine_translate: [0.1, 0.1]
+    affine_scale: [0.9, 1.1]
+    color_jitter:
+      brightness: 0.3
+      contrast: 0.3
+      saturation: 0.2
+    grayscale_p: 0.1
+    erasing_p: 0.2
+
+  data:
+    train_dir: expanded/train
+    test_dir: expanded/test
+
+uncertainty:
+  n_samples: 50
+  output_dir: outputs/uncertainty
+
+logging:
+  level: INFO
+  format: "%(asctime)s [%(levelname)s] %(name)s: %(message)s"

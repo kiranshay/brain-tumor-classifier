@@ -1,15 +1,26 @@
 import base64
 import io
-import os
 
 from fastapi import FastAPI, File, UploadFile, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 
-from model import load_model, predict, predict_with_gradcam
+from neuroscan.config import load_config
+from neuroscan.inference import CascadeInference
+from neuroscan.logging_setup import setup_logging, get_logger
+
 from database import insert_prediction, get_predictions, get_stats
 from schemas import PredictionResponse, PredictionHistoryItem, StatsResponse
 
+# ---- Config + logging --------------------------------------------------------
+config = load_config()
+setup_logging(config)
+log = get_logger("main")
+
+THUMBNAIL_SIZE = tuple(config["thumbnail"]["size"])
+THUMBNAIL_QUALITY = config["thumbnail"]["jpeg_quality"]
+
+# ---- FastAPI app -------------------------------------------------------------
 app = FastAPI(title="Brain Tumor Classifier API")
 
 app.add_middleware(
@@ -29,16 +40,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load model at startup
-weights_path = os.environ.get("MODEL_PATH", "tumor_classifier.pth")
-load_model(weights_path)
+# ---- Cascade inference engine (loads models at startup) ----------------------
+cascade = CascadeInference(config)
+log.info("CascadeInference initialized.")
 
 
-def make_thumbnail_base64(image_bytes: bytes, size: tuple = (128, 128)) -> str:
+def make_thumbnail_base64(image_bytes: bytes) -> str:
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-    image.thumbnail(size)
+    image.thumbnail(THUMBNAIL_SIZE)
     buffer = io.BytesIO()
-    image.save(buffer, format="JPEG", quality=70)
+    image.save(buffer, format="JPEG", quality=THUMBNAIL_QUALITY)
     return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
 
@@ -55,8 +66,9 @@ async def predict_tumor(file: UploadFile = File(...)):
     image_bytes = await file.read()
 
     try:
-        result = predict(image_bytes)
+        result = cascade.predict(image_bytes)
     except Exception as e:
+        log.exception("Inference failed")
         raise HTTPException(status_code=500, detail=f"Inference failed: {str(e)}")
 
     thumbnail = make_thumbnail_base64(image_bytes)
@@ -89,6 +101,32 @@ async def predict_tumor(file: UploadFile = File(...)):
     )
 
 
+@app.post("/uncertainty")
+async def predict_uncertainty(file: UploadFile = File(...)):
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File must be an image")
+
+    image_bytes = await file.read()
+
+    try:
+        n_samples = config.get("uncertainty", {}).get("n_samples", 50)
+        result = cascade.predict_with_uncertainty(image_bytes, n_samples=n_samples)
+    except Exception as e:
+        log.exception("Uncertainty inference failed")
+        raise HTTPException(status_code=500, detail=f"Uncertainty inference failed: {str(e)}")
+
+    return {
+        "predicted_class": result["predicted_class"],
+        "confidence": result["confidence"],
+        "all_confidences": result["all_confidences"],
+        "uncertainty": result["uncertainty"],
+        "variance_per_class": result["variance_per_class"],
+        "inference_time_ms": result["inference_time_ms"],
+        "n_samples": result["n_samples"],
+        "original_filename": file.filename or "unknown",
+    }
+
+
 @app.post("/gradcam")
 async def get_gradcam(file: UploadFile = File(...)):
     if not file.content_type or not file.content_type.startswith("image/"):
@@ -97,11 +135,10 @@ async def get_gradcam(file: UploadFile = File(...)):
     image_bytes = await file.read()
 
     try:
-        result = predict_with_gradcam(image_bytes)
+        return cascade.predict_with_gradcam(image_bytes)
     except Exception as e:
+        log.exception("Grad-CAM failed")
         raise HTTPException(status_code=500, detail=f"Grad-CAM failed: {str(e)}")
-
-    return result
 
 
 @app.get("/predictions", response_model=list[PredictionHistoryItem])
