@@ -64,7 +64,11 @@ IMAGENET_STD = (0.229, 0.224, 0.225)
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--mode", choices=("trustworthy", "extended"), required=True)
+    p.add_argument("--mode", choices=("trustworthy", "extended", "leaky"),
+                   required=True,
+                   help="Build label, recorded in run_summary.json. "
+                        "'leaky' is the methodological control for "
+                        "'trustworthy' — see training/build_leaky_dataset.py.")
     p.add_argument("--data-dir", type=Path, required=True,
                    help="Directory containing train/ val/ test/ subdirs.")
     p.add_argument("--output-dir", type=Path, required=True,
