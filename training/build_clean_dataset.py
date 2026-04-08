@@ -35,6 +35,31 @@ fixes:
 This script does NOT train any model. It only assembles
 ``output_dir/{train,val,test}/<class>/`` and writes a
 ``dataset_card.json`` describing exactly what was built.
+
+Modes
+-----
+``--mode trustworthy``
+    4-class build (glioma, meningioma, no_tumor, pituitary) using
+    only data1 and data2. Both sources ship with their own
+    train/test splits authored by the dataset creators; we preserve
+    those and carve a 15% file-level val set out of each train pool.
+    No data44 is used. This is the **headline / defensible** result
+    for any reporting.
+
+``--mode extended``
+    8-class build that adds the 4 data44-only rare classes
+    (schwannoma, neurocytoma, carcinoma, papilloma) and pulls
+    additional images for the 4 overlapping classes from data44
+    sister folders. Patient-level grouping is attempted from
+    filenames; if it fails (e.g. data44's content-hash filenames),
+    falls back to image-level splits with a loud warning. Treat
+    metrics on the data44-only classes as **exploratory** because of
+    (a) source confound (only one source) and (b) possible
+    patient-level leakage when the fallback triggers.
+
+``--mode both`` (default)
+    Builds both into ``<output-dir>/trustworthy_4class/`` and
+    ``<output-dir>/extended_8class/``.
 """
 
 from __future__ import annotations
@@ -96,6 +121,15 @@ EXPANDED_CLASSES: dict[str, dict] = {
 
 DATA44_ONLY_CLASSES = {"schwannoma", "neurocytoma", "carcinoma", "papilloma"}
 
+# The "trustworthy" 4-class subset: classes for which both data1 and data2
+# provide images, so the model can be trained and evaluated entirely on
+# sources with published train/test splits and (in BRISC's case) some
+# patient-aware curation. Used by --mode trustworthy.
+TRUSTWORTHY_CLASSES: tuple[str, ...] = (
+    "glioma", "meningioma", "no_tumor", "pituitary",
+)
+EXTENDED_CLASSES: tuple[str, ...] = tuple(EXPANDED_CLASSES.keys())
+
 IMAGE_EXTS = (".jpg", ".jpeg", ".png")
 
 VAL_FRACTION_OF_TRAIN = 0.15  # for data1 / data2 carve-out
@@ -115,9 +149,9 @@ def list_images(folder: Path) -> list[Path]:
                   if p.is_file() and p.suffix.lower() in IMAGE_EXTS)
 
 
-def ensure_split_dirs(output_dir: Path) -> None:
+def ensure_split_dirs(output_dir: Path, classes: Iterable[str]) -> None:
     for split in ("train", "val", "test"):
-        for cls in EXPANDED_CLASSES:
+        for cls in classes:
             (output_dir / split / cls).mkdir(parents=True, exist_ok=True)
 
 
@@ -293,8 +327,15 @@ def split_files(
 class BuildState:
     """Mutable state shared across per-source builders."""
 
-    def __init__(self, output_dir: Path) -> None:
+    def __init__(
+        self,
+        output_dir: Path,
+        classes: tuple[str, ...],
+        label: str,
+    ) -> None:
         self.output_dir = output_dir
+        self.classes = classes
+        self.label = label  # human name e.g. "trustworthy_4class"
         self.idx = 0  # global running counter for filename uniqueness
         self.warnings: list[str] = []
         # per-class per-split file counts (for the dataset card / printout)
@@ -497,10 +538,11 @@ def build_data44(
 def print_dataset_card(state: BuildState) -> None:
     print()
     print("=" * 64)
-    print("NeuroScan clean dataset — build summary")
+    print(f"NeuroScan clean dataset — build summary [{state.label}]")
+    print(f"output: {state.output_dir}")
     print("=" * 64)
 
-    classes = sorted(EXPANDED_CLASSES.keys())
+    classes = sorted(state.classes)
     splits = ("train", "val", "test")
 
     header = f"{'class':>14s} | " + " | ".join(f"{s:>7s}" for s in splits)
@@ -567,8 +609,15 @@ def print_dataset_card(state: BuildState) -> None:
     print("=" * 64)
 
 
-def write_dataset_card_json(state: BuildState, seed: int) -> None:
+def write_dataset_card_json(
+    state: BuildState,
+    seed: int,
+    allowed_sources: tuple[str, ...],
+) -> None:
     card = {
+        "label": state.label,
+        "classes": list(state.classes),
+        "allowed_sources": list(allowed_sources),
         "sources_used": sorted(state.sources_used),
         "seed": seed,
         "split_fractions": {
@@ -581,10 +630,17 @@ def write_dataset_card_json(state: BuildState, seed: int) -> None:
         },
         "methodology_per_class": state.methodology,
         "counts_per_class_per_split": {
-            cls: dict(state.counts[cls]) for cls in sorted(state.counts)
+            cls: dict(state.counts[cls]) for cls in sorted(state.classes)
         },
         "data44_patient_counts": state.data44_patient_counts,
         "warnings": state.warnings,
+        "notes": [
+            "Filenames are prefixed with d1_/d2_/d3_ to identify the source "
+            "dataset (data1/data2/data44). For the trustworthy 4-class build, "
+            "this lets a training script run cross-source evaluation "
+            "(train on d1_*, test on d2_*, and vice versa) by filtering on "
+            "the prefix.",
+        ],
     }
     out_path = state.output_dir / "dataset_card.json"
     out_path.write_text(json.dumps(card, indent=2, sort_keys=True))
@@ -608,10 +664,53 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--data2-dir", type=Path, default=None,
                    help="Path to the unzipped BRISC data2 root.")
     p.add_argument("--output-dir", type=Path, required=True,
-                   help="Where to write the {train,val,test}/<class>/ tree.")
+                   help="Where to write the {train,val,test}/<class>/ tree. "
+                        "When --mode=both, two subdirs "
+                        "(trustworthy_4class/, extended_8class/) are "
+                        "created underneath this path.")
+    p.add_argument("--mode", choices=("trustworthy", "extended", "both"),
+                   default="both",
+                   help="trustworthy: 4 classes from data1+data2 only "
+                        "(defensible methodology, what to report as the "
+                        "headline result). "
+                        "extended: 8 classes including data44 (matches the "
+                        "deployed backend; treat data44-only class metrics "
+                        "as exploratory due to source confound and possible "
+                        "patient leakage). "
+                        "both (default): build both into subdirs.")
     p.add_argument("--seed", type=int, default=42,
                    help="RNG seed for patient/file shuffling (default: 42).")
     return p.parse_args(argv)
+
+
+def build_one_dataset(
+    output_dir: Path,
+    classes: tuple[str, ...],
+    allowed_sources: tuple[str, ...],
+    label: str,
+    args: argparse.Namespace,
+) -> BuildState:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    ensure_split_dirs(output_dir, classes)
+
+    state = BuildState(output_dir, classes=classes, label=label)
+
+    for cls in classes:
+        sources = EXPANDED_CLASSES[cls]
+        # Per-class RNG so the order in which sources are processed does
+        # not change the data44 patient assignment.
+        cls_rng = random.Random(args.seed + hash(cls) % (2**31))
+        if "data1" in allowed_sources:
+            build_data1(cls, sources, args.data1_dir, state, cls_rng)
+        if "data2" in allowed_sources:
+            build_data2(cls, sources, args.data2_dir, state, cls_rng)
+        if "data44" in allowed_sources:
+            build_data44(cls, sources, args.data44_dir, state, cls_rng)
+
+    print_dataset_card(state)
+    write_dataset_card_json(state, seed=args.seed,
+                            allowed_sources=allowed_sources)
+    return state
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -622,22 +721,33 @@ def main(argv: list[str] | None = None) -> int:
               "must be provided.", file=sys.stderr)
         return 2
 
-    output_dir: Path = args.output_dir
-    output_dir.mkdir(parents=True, exist_ok=True)
-    ensure_split_dirs(output_dir)
+    base_output: Path = args.output_dir
 
-    state = BuildState(output_dir)
+    builds: list[tuple[Path, tuple[str, ...], tuple[str, ...], str]] = []
 
-    for cls, sources in EXPANDED_CLASSES.items():
-        # Per-class RNG so the order in which sources are processed does
-        # not change the data44 patient assignment.
-        cls_rng = random.Random(args.seed + hash(cls) % (2**31))
-        build_data1(cls, sources, args.data1_dir, state, cls_rng)
-        build_data2(cls, sources, args.data2_dir, state, cls_rng)
-        build_data44(cls, sources, args.data44_dir, state, cls_rng)
+    if args.mode in ("trustworthy", "both"):
+        out = (base_output / "trustworthy_4class"
+               if args.mode == "both" else base_output)
+        builds.append((
+            out,
+            TRUSTWORTHY_CLASSES,
+            ("data1", "data2"),
+            "trustworthy_4class",
+        ))
 
-    print_dataset_card(state)
-    write_dataset_card_json(state, seed=args.seed)
+    if args.mode in ("extended", "both"):
+        out = (base_output / "extended_8class"
+               if args.mode == "both" else base_output)
+        builds.append((
+            out,
+            EXTENDED_CLASSES,
+            ("data1", "data2", "data44"),
+            "extended_8class",
+        ))
+
+    for out, classes, allowed_sources, label in builds:
+        build_one_dataset(out, classes, allowed_sources, label, args)
+
     return 0
 
 
