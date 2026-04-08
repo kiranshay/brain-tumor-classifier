@@ -1,0 +1,52 @@
+{
+  "mode": "leaky",
+  "seed": 42,
+  "args": {
+    "mode": "leaky",
+    "data_dir": "/content/leaky_4class",
+    "output_dir": "runs/leaky_4class",
+    "epochs": 20,
+    "batch_size": 32,
+    "lr": 5e-05,
+    "weight_decay": 0.01,
+    "dropout": 0.3,
+    "seed": 42,
+    "num_workers": 2
+  },
+  "num_classes": 4,
+  "class_names": [
+    "glioma",
+    "meningioma",
+    "no_tumor",
+    "pituitary"
+  ],
+  "num_train_images": 7769,
+  "num_val_images": 1373,
+  "num_test_images": 2301,
+  "best_epoch": 18,
+  "best_val_loss": 0.037066087389916985,
+  "best_val_acc": 0.9898033503277495,
+  "final_test_accuracy": 0.9895697522816167,
+  "final_test_loss": 0.03248351503783648,
+  "top_confused_pairs": [
+    {
+      "true": "pituitary",
+      "predicted": "meningioma",
+      "count": 5
+    },
+    {
+      "true": "glioma",
+      "predicted": "meningioma",
+      "count": 5
+    },
+    {
+      "true": "pituitary",
+      "predicted": "no_tumor",
+      "count": 4
+    }
+  ],
+  "total_wall_clock_seconds": 1284.6707689762115,
+  "gpu_name": "Tesla T4",
+  "torch_version": "2.10.0+cu128",
+  "dataset_card_path": "/content/leaky_4class/dataset_card.json"
+}
