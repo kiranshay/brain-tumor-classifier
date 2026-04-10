@@ -279,19 +279,23 @@
         <div class="about-grid">
           <div class="about-card">
             <h3><i data-lucide="cpu"></i> Architecture</h3>
-            <p>Two-stage hierarchical classification using EfficientNet-B0 models. Stage 1 classifies MRIs into 8 categories (glioma, meningioma, pituitary, schwannoma, neurocytoma, carcinoma, papilloma, and no tumor) at 95.5% accuracy. When a glioma is detected, Stage 2 identifies the subtype (astrocytoma, glioblastoma, oligodendroglioma, or ependymoma) at 95.7% accuracy. Both models are fully fine-tuned from ImageNet pretrained weights. On-demand Grad-CAM heatmaps visualize which brain regions the model focused on.</p>
+            <p>Two-stage hierarchical classification using EfficientNet-B0 models. Stage 1 classifies MRIs into 8 categories (glioma, meningioma, pituitary, schwannoma, neurocytoma, carcinoma, papilloma, and no tumor). When a glioma is detected, Stage 2 identifies the subtype (astrocytoma, glioblastoma, oligodendroglioma, or ependymoma). Both models are fully fine-tuned from ImageNet pretrained weights. On-demand Grad-CAM heatmaps visualize which brain regions the model focused on.</p>
           </div>
           <div class="about-card">
             <h3><i data-lucide="database"></i> Dataset</h3>
             <p>Stage 1 is trained on 15,467 MRI images combined from three sources: the Brain Tumor MRI Dataset (Kaggle), the BRISC dataset (axial, sagittal, and coronal orientations), and the 44-class Brain Tumor MRI dataset. Stage 2 is trained on 925 glioma subtype images from the 44-class dataset. Multiple data sources improve generalization across MRI styles and orientations.</p>
           </div>
           <div class="about-card">
+            <h3><i data-lucide="flask-conical"></i> Contamination Research</h3>
+            <p>This project includes an ongoing investigation into evaluation contamination in brain tumor MRI benchmarks. Patient-level data leakage (multiple slices per patient split across train/test) inflates reported accuracy by +2.5 pp overall and up to +11.6 pp for specific classes. A clean rebuild with patient-aware splits achieves 96.4% on 4 trustworthy classes, revealing that data1 gliomas have a genuine distributional weakness (86% recall) previously masked by leakage. Source confound was tested and rejected: rare classes scored worst despite maximum confound opportunity. These findings are being developed into a paper: <em>Quantifying Evaluation Contamination in Brain Tumor MRI Classification Benchmarks</em>.</p>
+          </div>
+          <div class="about-card">
             <h3><i data-lucide="layers"></i> Pipeline</h3>
             <p>Uploaded images are preprocessed (black border cropping, resize to 224x224, ImageNet normalization) and passed through the Stage 1 model. If classified as glioma, the same preprocessed image is passed through the Stage 2 subtype model. Both outputs include softmax probability distributions with confidence scores for all classes. Grad-CAM heatmaps can be generated on demand to show model attention regions.</p>
           </div>
           <div class="about-card">
-            <h3><i data-lucide="alert-circle"></i> Limitations</h3>
-            <p>Glioma subtype classification is available; meningioma and pituitary subtype information is educational only. Performance may vary on images with annotations, text overlays, or significant visual differences from training data. This is an educational tool and should not be used for medical diagnosis.</p>
+            <h3><i data-lucide="alert-circle"></i> Limitations &amp; Methodology Notes</h3>
+            <p>The deployed model uses image-level splits and reports ~95% accuracy. Our clean evaluation with patient-aware splits shows this is inflated. Honest numbers: 96.4% on 4 trustworthy classes (data1+data2), 94.8% extended 8-class. Rare classes (papilloma n=35, carcinoma n=37) have wide confidence intervals. Wilson 95% CIs are computed for all per-class metrics. This is an educational and research tool, not a medical diagnostic device.</p>
           </div>
         </div>
 
