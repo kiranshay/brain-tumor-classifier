@@ -43,7 +43,7 @@
           <i data-lucide="info"></i> About
         </button>
       </nav>
-      <a href="https://kiranshay.github.io" class="back-link">
+      <a href="https://kiranshay.github.io" class="back-link" aria-label="Back to portfolio">
         <i data-lucide="arrow-left"></i> Portfolio
       </a>
     </div>
@@ -76,11 +76,11 @@
               <span>For educational and demonstration purposes only. Not a medical diagnostic tool.</span>
             </div>
 
-            <div class="upload-zone" id="upload-zone">
+            <div class="upload-zone" id="upload-zone" role="button" tabindex="0" aria-label="Upload MRI image. Drag and drop or click to browse files.">
               <i data-lucide="upload-cloud"></i>
               <p class="upload-text">Drag & drop an MRI image here</p>
               <p class="upload-hint">or click to browse files</p>
-              <input type="file" id="file-input" accept="image/*" hidden>
+              <input type="file" id="file-input" accept="image/*" hidden aria-label="Select MRI image file">
             </div>
 
             <div class="expected-mris">
@@ -331,7 +331,7 @@
     <div class="modal">
       <div class="modal-header">
         <h2>Classification Detail</h2>
-        <button class="btn btn-ghost btn-sm" id="modal-close-btn">
+        <button class="btn btn-ghost btn-sm" id="modal-close-btn" aria-label="Close modal">
           <i data-lucide="x"></i>
         </button>
       </div>
