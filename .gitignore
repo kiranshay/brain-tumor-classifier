@@ -10,3 +10,5 @@ build/
 data/
 *.zip
 runs/
+project_proposal.*
+neurips_2023.sty
